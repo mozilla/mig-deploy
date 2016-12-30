@@ -1,0 +1,62 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "MIG API",
+    "Parameters": {
+        "Environment": {
+            "AllowedValues": [
+                "dev",
+                "stage",
+                "prod"
+            ],
+            "Default": "dev",
+            "Description": "Environment",
+            "Type": "String"
+        },
+        "ImageId": {
+            "Description": "AMI",
+            "Type": "String"
+        },
+        "InstanceType": {
+            "Default": "t2.micro",
+            "Description": "Instance type",
+            "Type": "String"
+        },
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "BastionStack": {
+            "Description": "Name of bastion stack",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "LaunchConfiguration": {
+            "Type": "AWS::AutoScaling::LaunchConfiguration",
+            "Properties": {
+                "ImageId": { "Ref": "ImageId" },
+                "InstanceType": { "Ref": "InstanceType" },
+                "KeyName": { "Ref": "KeyName" },
+                "SecurityGroups": [ { "Ref": "APISecurityGroup" } ]
+            }
+        },
+        "AutoScalingGroup": {
+            "Type": "AWS::AutoScaling::AutoScalingGroup",
+            "Properties": {
+                "LaunchConfigurationName": { "Ref": "LaunchConfiguration" },
+                "MinSize": "1",
+                "MaxSize": "2",
+                "VPCZoneIdentifier": [ { "Fn::ImportValue": { "Fn::Sub": "${BastionStack}-PrivateSubnet" }} ]
+            }
+        },
+        "APISecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Enable SSH access to API host",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BastionStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BastionStack}-BastionSecurityGroupId" }}}
+                ]
+            }
+        }
+    }
+}

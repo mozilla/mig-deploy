@@ -1,0 +1,179 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "MIG base infrastructure",
+    "Parameters": {
+        "Environment": {
+            "AllowedValues": [
+                "dev",
+                "stage",
+                "prod"
+            ],
+            "Default": "dev",
+            "Description": "Environment",
+            "Type": "String"
+        },
+        "ImageId": {
+            "Description": "AMI",
+            "Type": "String"
+        },
+        "InstanceType": {
+            "Default": "t2.micro",
+            "Description": "Instance type",
+            "Type": "String"
+        },
+        "KeyName": {
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        }
+    },
+    "Resources": {
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "CidrBlock": "10.20.0.0/16",
+                "Tags": [
+                    { "Key": "Name", "Value": "mig vpc" }
+                ]
+            }
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties": {
+                "Tags": [
+                    { "Key": "Name", "Value": "mig internet gateway" }
+                ]
+            }
+        },
+        "GatewayAssoc": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "InternetGatewayId": { "Ref": "InternetGateway" }
+            }
+        },
+        "PublicSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "CidrBlock": "10.20.0.0/24",
+                "Tags": [
+                    { "Key": "Name", "Value": "mig public subnet" }
+                ]
+            }
+        },
+        "PublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "Tags": [
+                    { "Key": "Name", "Value": "mig public route table" }
+                ]
+            }
+        },
+        "PublicRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "GatewayAssoc",
+            "Properties": {
+                "RouteTableId": { "Ref": "PublicRouteTable" },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": { "Ref": "InternetGateway" }
+            }
+        },
+        "PublicRouteTableAssoc": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": { "Ref": "PublicSubnet" },
+                "RouteTableId": { "Ref": "PublicRouteTable" }
+            }
+        },
+        "PrivateSubnet": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "CidrBlock": "10.20.1.0/24",
+                "MapPublicIpOnLaunch": "false",
+                "Tags": [
+                    { "Key": "Name", "Value": "mig private subnet" }
+                ]
+            }
+        },
+        "PrivateRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "Tags": [
+                    { "Key": "Name", "Value": "mig private route table" }
+                ]
+            }
+        },
+        "PrivateRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "GatewayAssoc",
+            "Properties": {
+                "RouteTableId": { "Ref": "PrivateRouteTable" },
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": { "Ref": "InternetGateway" }
+            }
+        },
+        "PrivateRouteTableAssoc": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": { "Ref": "PrivateSubnet" },
+                "RouteTableId": { "Ref": "PrivateRouteTable" }
+            }
+        },
+        "BastionInstance": {
+            "Type": "AWS::EC2::Instance",
+            "DependsOn": "GatewayAssoc",
+            "Properties": {
+                "ImageId": { "Ref": "ImageId" },
+                "InstanceType": { "Ref": "InstanceType" },
+                "KeyName": { "Ref": "KeyName" },
+                "NetworkInterfaces": [{
+                    "GroupSet": [{"Ref": "BastionSecurityGroup"}],
+                    "AssociatePublicIpAddress": "true",
+                    "DeviceIndex": "0",
+                    "DeleteOnTermination": "true",
+                    "SubnetId": { "Ref": "PublicSubnet" }
+                }],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig bastion host" }
+                ]
+            }
+        },
+        "BastionSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Enable SSH access to bastion host",
+                "VpcId": { "Ref": "VPC" },
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "CidrIp": "0.0.0.0/0" }
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig bastion security group" }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "VPCId": {
+            "Description": "VPC ID",
+            "Value": { "Ref": "VPC" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-VPCId" }}
+        },
+        "PrivateSubnet": {
+            "Description": "Private subnet ID",
+            "Value": { "Ref": "PrivateSubnet" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PrivateSubnet" }}
+        },
+        "BastionInstanceId": {
+            "Description": "Bastion host instance ID",
+            "Value": { "Ref": "BastionInstance" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-BastionInstanceId" }}
+        },
+        "BastionSecurityGroupId": {
+            "Description": "Bastion security group ID",
+            "Value": { "Ref": "BastionSecurityGroup" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-BastionSecurityGroupId" }}
+        }
+    }
+}

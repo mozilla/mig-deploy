@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+    - "../vars/default.yml"
+
+  tasks:
+  - name: Configure MIG base infrastructure
+    action: cloudformation
+      stack_name="{{ base_stack_name }}"
+      state="{{ state }}"
+      region="{{ region }}"
+      template="../templates/base.json"
+    args:
+      template_parameters:
+        Environment: "{{ env }}"
+        ImageId: "{{ ami_id }}"
+        InstanceType: "t2.micro"
+        KeyName: "{{ keys }}"
