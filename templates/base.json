@@ -115,7 +115,7 @@
             "Properties": {
                 "RouteTableId": { "Ref": "PrivateRouteTable" },
                 "DestinationCidrBlock": "0.0.0.0/0",
-                "GatewayId": { "Ref": "InternetGateway" }
+                "InstanceId": { "Ref": "BastionInstance" }
             }
         },
         "PrivateRouteTableAssoc": {
@@ -132,6 +132,7 @@
                 "ImageId": { "Ref": "ImageId" },
                 "InstanceType": { "Ref": "InstanceType" },
                 "KeyName": { "Ref": "KeyName" },
+                "SourceDestCheck": "false",
                 "NetworkInterfaces": [{
                     "GroupSet": [{"Ref": "BastionSecurityGroup"}],
                     "AssociatePublicIpAddress": "true",
@@ -163,10 +164,11 @@
         "BastionSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "GroupDescription": "Enable SSH access to bastion host",
+                "GroupDescription": "Security group for MIG bastion host",
                 "VpcId": { "Ref": "VPC" },
                 "SecurityGroupIngress": [
-                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "CidrIp": "0.0.0.0/0" }
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "CidrIp": "0.0.0.0/0" },
+                    { "IpProtocol": "tcp", "FromPort": "0", "ToPort": "65535", "CidrIp": "10.20.0.0/16" },
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig bastion security group" }
