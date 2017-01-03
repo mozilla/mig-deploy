@@ -1,0 +1,11 @@
+---
+- name: Install packages
+  package:
+    name: iptables
+
+- name: Set NAT policy
+  iptables:
+    chain: POSTROUTING
+    table: nat
+    jump: MASQUERADE
+    out_interface: eth0

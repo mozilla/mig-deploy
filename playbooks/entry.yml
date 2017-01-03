@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    noderole: "{{ lookup('file', '/etc/myrole') }}"
+
+  roles:
+    - { role: "gw", when: noderole == "gw" }
