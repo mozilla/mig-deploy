@@ -10,3 +10,4 @@ base_stack_name: "mig-base-{{ base_stack_id }}"
 
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
+api_certificate_name: "migapitmp"

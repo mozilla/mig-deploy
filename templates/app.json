@@ -16,7 +16,7 @@
             "Description": "AMI",
             "Type": "String"
         },
-        "InstanceType": {
+        "ApiInstanceType": {
             "Default": "t2.micro",
             "Description": "Instance type",
             "Type": "String"
@@ -24,9 +24,13 @@
         "KeyName": {
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
-        "BastionStack": {
+        "BaseStack": {
             "Description": "Name of bastion stack",
             "Type": "String"
+        },
+        "APICertName": {
+            "Type": "String",
+            "Description": "Name of certificate to use for API"
         }
     },
     "Resources": {
@@ -34,7 +38,7 @@
             "Type": "AWS::AutoScaling::LaunchConfiguration",
             "Properties": {
                 "ImageId": { "Ref": "ImageId" },
-                "InstanceType": { "Ref": "InstanceType" },
+                "InstanceType": { "Ref": "ApiInstanceType" },
                 "KeyName": { "Ref": "KeyName" },
                 "SecurityGroups": [ { "Ref": "APISecurityGroup" } ]
             }
@@ -44,17 +48,71 @@
             "Properties": {
                 "LaunchConfigurationName": { "Ref": "LaunchConfiguration" },
                 "MinSize": "1",
-                "MaxSize": "2",
-                "VPCZoneIdentifier": [ { "Fn::ImportValue": { "Fn::Sub": "${BastionStack}-PrivateSubnet" }} ]
+                "MaxSize": "1",
+                "HealthCheckGracePeriod": "500",
+                "HealthCheckType": "EC2",
+                "LoadBalancerNames": [ { "Ref": "APIELB" } ],
+                "VPCZoneIdentifier": [ { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet" }} ]
+            }
+        },
+        "APIELB": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "Tags": [
+                    { "Key": "Name", "Value": "mig api loader balancer" }
+                ],
+                "Policies": [
+                    {
+                        "PolicyName": "APIELBSecurityPolicy",
+                        "PolicyType": "SSLNegotiationPolicyType",
+                        "Attributes": [ {
+                            "Name": "Reference-Security-Policy",
+                            "Value": "ELBSecurityPolicy-2015-03"
+                        } ]
+                    }
+                ],
+                "Subnets": [ { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PublicSubnet" }} ],
+                "SecurityGroups": [ { "Ref": "APIELBSecurityGroup" } ],
+                "Listeners": [ {
+                    "InstancePort": "80",
+                    "InstanceProtocol": "HTTP",
+                    "LoadBalancerPort": "443",
+                    "Protocol": "HTTPS",
+                    "PolicyNames": [ "APIELBSecurityPolicy" ],
+                    "SSLCertificateId": {
+                        "Fn::Join": [ "",
+                            [
+                                "arn:aws:iam::",
+                                { "Ref": "AWS::AccountId" },
+                                ":server-certificate/",
+                                { "Ref": "APICertName" }
+                            ]
+                        ]
+                    }
+                } ],
             }
         },
         "APISecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription": "Enable SSH access to API host",
-                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BastionStack}-VPCId" }},
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
                 "SecurityGroupIngress": [
-                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BastionStack}-BastionSecurityGroupId" }}}
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}},
+                    { "IpProtocol": "tcp", "FromPort": "80", "ToPort": "80", "SourceSecurityGroupId": { "Ref": "APIELBSecurityGroup" }},
+                ]
+            }
+        },
+        "APIELBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "API ELB access",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "443", "ToPort": "443", "CidrIp": "0.0.0.0/0" }
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig api elb security group" }
                 ]
             }
         }

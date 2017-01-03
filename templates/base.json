@@ -165,6 +165,11 @@
             "Value": { "Ref": "PrivateSubnet" },
             "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PrivateSubnet" }}
         },
+        "PublicSubnet": {
+            "Description": "Public subnet ID",
+            "Value": { "Ref": "PublicSubnet" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PublicSubnet" }}
+        },
         "BastionInstanceId": {
             "Description": "Bastion host instance ID",
             "Value": { "Ref": "BastionInstance" },

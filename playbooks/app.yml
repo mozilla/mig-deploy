@@ -12,7 +12,7 @@
       stack_name="{{ app_stack_name }}"
       state="{{ state }}"
       region="{{ region }}"
-      template="../templates/mozmig-app.json"
+      template="../templates/app.json"
     args:
       template_parameters:
         Environment: "{{ env }}"
@@ -20,3 +20,4 @@
         ApiInstanceType: "t2.medium"
         KeyName: "{{ keys }}"
         BaseStack: "{{ base_stack_name }}"
+        APICertName: "{{ api_certificate_name }}"
