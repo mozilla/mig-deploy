@@ -23,6 +23,10 @@
         },
         "KeyName": {
             "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "DeployRepo": {
+            "Type": "String",
+            "Description": "URL for MIG deploy repo"
         }
     },
     "Resources": {
@@ -137,7 +141,23 @@
                 }],
                 "Tags": [
                     { "Key": "Name", "Value": "mig bastion host" }
-                ]
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/sh\n",
+                                "echo gw >> /etc/myrole\n",
+                                "apt-get -y install git ansible\n",
+                                "cd /root && git clone ",
+                                { "Ref": "DeployRepo" },
+                                "\n",
+                                "cd /root/mig-deploy/playbooks && ansible-playbook entry.yml\n"
+                            ]
+                        ]
+                    }
+                }
             }
         },
         "BastionSecurityGroup": {

@@ -19,3 +19,4 @@
         ImageId: "{{ ami_id }}"
         InstanceType: "t2.micro"
         KeyName: "{{ keys }}"
+        DeployRepo: "{{ deployrepo }}"

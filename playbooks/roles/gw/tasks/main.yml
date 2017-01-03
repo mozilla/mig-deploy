@@ -1,7 +1,10 @@
 ---
 - name: Install packages
   package:
-    name: iptables
+    name: "{{ item }}"
+  with_items:
+    - iptables
+    - iptables-persistent
 
 - name: Set NAT policy
   iptables:
