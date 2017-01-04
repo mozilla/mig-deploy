@@ -79,5 +79,12 @@
                 ]
             }
         }
+    },
+    "Outputs": {
+        "DBInstanceAddress": {
+            "Description": "Endpoint for connection to MIG RDS instance",
+            "Value": { "Fn::GetAtt": [ "DB", "Endpoint.Address" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-DBInstanceAddress" }}
+        }
     }
 }
