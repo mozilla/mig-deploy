@@ -71,7 +71,8 @@
                 "GroupDescription": "Security group for MIG RDS instance",
                 "SecurityGroupIngress": [
                     { "IpProtocol": "tcp", "FromPort": "5432", "ToPort": "5432", "CidrIp": "10.20.2.0/24" },
-                    { "IpProtocol": "tcp", "FromPort": "5432", "ToPort": "5432", "CidrIp": "10.20.3.0/24" }
+                    { "IpProtocol": "tcp", "FromPort": "5432", "ToPort": "5432", "CidrIp": "10.20.3.0/24" },
+                    { "IpProtocol": "tcp", "FromPort": "5432", "ToPort": "5432", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}}
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig rds security group" }
