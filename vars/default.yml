@@ -1,7 +1,5 @@
 ---
 region: us-west-2
-availability_zone: us-west-2a
-availability_zone2: us-west-2b
 keys: "alm-keys"
 ami_id: ami-2709bd47
 state: present
