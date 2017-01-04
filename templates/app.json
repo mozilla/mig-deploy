@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "MIG API",
+    "Description": "MIG application",
     "Parameters": {
         "Environment": {
             "AllowedValues": [
@@ -25,7 +25,7 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "BaseStack": {
-            "Description": "Name of bastion stack",
+            "Description": "Name of base stack",
             "Type": "String"
         },
         "APICertName": {
@@ -47,12 +47,15 @@
             "Type": "AWS::AutoScaling::AutoScalingGroup",
             "Properties": {
                 "LaunchConfigurationName": { "Ref": "LaunchConfiguration" },
-                "MinSize": "1",
-                "MaxSize": "1",
+                "MinSize": "2",
+                "MaxSize": "2",
                 "HealthCheckGracePeriod": "500",
                 "HealthCheckType": "EC2",
                 "LoadBalancerNames": [ { "Ref": "APIELB" } ],
-                "VPCZoneIdentifier": [ { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet" }} ]
+                "VPCZoneIdentifier": [ { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet" }} ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig api", "PropagateAtLaunch": "true" }
+                ],
             }
         },
         "APIELB": {
@@ -100,6 +103,9 @@
                 "SecurityGroupIngress": [
                     { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}},
                     { "IpProtocol": "tcp", "FromPort": "80", "ToPort": "80", "SourceSecurityGroupId": { "Ref": "APIELBSecurityGroup" }},
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig api security group" }
                 ]
             }
         },
