@@ -27,10 +27,6 @@
         "DeployRepo": {
             "Type": "String",
             "Description": "URL for MIG deploy repo"
-        },
-        "AvailabilityZone": {
-            "Type": "String",
-            "Description": "Availability zone to use for subnets"
         }
     },
     "Resources": {
@@ -58,14 +54,25 @@
                 "InternetGatewayId": { "Ref": "InternetGateway" }
             }
         },
-        "PublicSubnet": {
+        "PublicSubnet1": {
             "Type": "AWS::EC2::Subnet",
             "Properties": {
                 "VpcId": { "Ref": "VPC" },
                 "CidrBlock": "10.20.0.0/24",
-                "AvailabilityZone": { "Ref": "AvailabilityZone" },
+                "AvailabilityZone": { "Fn::Select": ["0", { "Fn::GetAZs": "" }] },
                 "Tags": [
-                    { "Key": "Name", "Value": "mig public subnet" }
+                    { "Key": "Name", "Value": "mig public subnet 1" }
+                ]
+            }
+        },
+        "PublicSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "CidrBlock": "10.20.1.0/24",
+                "AvailabilityZone": { "Fn::Select": ["1", { "Fn::GetAZs": "" }] },
+                "Tags": [
+                    { "Key": "Name", "Value": "mig public subnet 2" }
                 ]
             }
         },
@@ -87,22 +94,41 @@
                 "GatewayId": { "Ref": "InternetGateway" }
             }
         },
-        "PublicRouteTableAssoc": {
+        "PublicRouteTableAssoc1": {
             "Type": "AWS::EC2::SubnetRouteTableAssociation",
             "Properties": {
-                "SubnetId": { "Ref": "PublicSubnet" },
+                "SubnetId": { "Ref": "PublicSubnet1" },
                 "RouteTableId": { "Ref": "PublicRouteTable" }
             }
         },
-        "PrivateSubnet": {
+        "PublicRouteTableAssoc2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": { "Ref": "PublicSubnet2" },
+                "RouteTableId": { "Ref": "PublicRouteTable" }
+            }
+        },
+        "PrivateSubnet1": {
             "Type": "AWS::EC2::Subnet",
             "Properties": {
                 "VpcId": { "Ref": "VPC" },
-                "CidrBlock": "10.20.1.0/24",
-                "AvailabilityZone": { "Ref": "AvailabilityZone" },
+                "CidrBlock": "10.20.2.0/24",
+                "AvailabilityZone": { "Fn::Select": ["0", { "Fn::GetAZs": "" }] },
                 "MapPublicIpOnLaunch": "false",
                 "Tags": [
-                    { "Key": "Name", "Value": "mig private subnet" }
+                    { "Key": "Name", "Value": "mig private subnet 1" }
+                ]
+            }
+        },
+        "PrivateSubnet2": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "VpcId": { "Ref": "VPC" },
+                "CidrBlock": "10.20.3.0/24",
+                "AvailabilityZone": { "Fn::Select": ["1", { "Fn::GetAZs": "" }] },
+                "MapPublicIpOnLaunch": "false",
+                "Tags": [
+                    { "Key": "Name", "Value": "mig private subnet 2" }
                 ]
             }
         },
@@ -124,10 +150,17 @@
                 "InstanceId": { "Ref": "BastionInstance" }
             }
         },
-        "PrivateRouteTableAssoc": {
+        "PrivateRouteTableAssoc1": {
             "Type": "AWS::EC2::SubnetRouteTableAssociation",
             "Properties": {
-                "SubnetId": { "Ref": "PrivateSubnet" },
+                "SubnetId": { "Ref": "PrivateSubnet1" },
+                "RouteTableId": { "Ref": "PrivateRouteTable" }
+            }
+        },
+        "PrivateRouteTableAssoc2": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": { "Ref": "PrivateSubnet2" },
                 "RouteTableId": { "Ref": "PrivateRouteTable" }
             }
         },
@@ -144,7 +177,7 @@
                     "AssociatePublicIpAddress": "true",
                     "DeviceIndex": "0",
                     "DeleteOnTermination": "true",
-                    "SubnetId": { "Ref": "PublicSubnet" }
+                    "SubnetId": { "Ref": "PublicSubnet1" }
                 }],
                 "Tags": [
                     { "Key": "Name", "Value": "mig bastion host" }
@@ -174,7 +207,7 @@
                 "VpcId": { "Ref": "VPC" },
                 "SecurityGroupIngress": [
                     { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "CidrIp": "0.0.0.0/0" },
-                    { "IpProtocol": "tcp", "FromPort": "0", "ToPort": "65535", "CidrIp": "10.20.0.0/16" },
+                    { "IpProtocol": "tcp", "FromPort": "0", "ToPort": "65535", "CidrIp": "10.20.0.0/16" }
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig bastion security group" }
@@ -188,20 +221,25 @@
             "Value": { "Ref": "VPC" },
             "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-VPCId" }}
         },
-        "PrivateSubnet": {
-            "Description": "Private subnet ID",
-            "Value": { "Ref": "PrivateSubnet" },
-            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PrivateSubnet" }}
+        "PrivateSubnet1": {
+            "Description": "Private subnet 1 ID",
+            "Value": { "Ref": "PrivateSubnet1" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PrivateSubnet1" }}
         },
-        "PublicSubnet": {
-            "Description": "Public subnet ID",
-            "Value": { "Ref": "PublicSubnet" },
-            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PublicSubnet" }}
+        "PrivateSubnet2": {
+            "Description": "Private subnet 2 ID",
+            "Value": { "Ref": "PrivateSubnet2" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PrivateSubnet2" }}
         },
-        "AvailabilityZone": {
-            "Description": "Availability zone",
-            "Value": { "Ref": "AvailabilityZone" },
-            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-AvailabilityZone" }}
+        "PublicSubnet1": {
+            "Description": "Public subnet 1 ID",
+            "Value": { "Ref": "PublicSubnet1" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PublicSubnet1" }}
+        },
+        "PublicSubnet2": {
+            "Description": "Public subnet 2 ID",
+            "Value": { "Ref": "PublicSubnet2" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-PublicSubnet2" }}
         },
         "BastionInstanceId": {
             "Description": "Bastion host instance ID",

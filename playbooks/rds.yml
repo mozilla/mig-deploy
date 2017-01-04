@@ -5,18 +5,17 @@
 
   vars_files:
     - "../vars/default.yml"
+    - "../vars/sec.yml"
 
   tasks:
-  - name: Configure MIG base infrastructure
+  - name: Configure MIG RDS
     action: cloudformation
-      stack_name="{{ base_stack_name }}"
+      stack_name="{{ rds_stack_name }}"
       state="{{ state }}"
       region="{{ region }}"
-      template="../templates/base.json"
+      template="../templates/rds.json"
     args:
       template_parameters:
         Environment: "{{ env }}"
-        ImageId: "{{ ami_id }}"
-        InstanceType: "t2.micro"
-        KeyName: "{{ keys }}"
-        DeployRepo: "{{ deployrepo }}"
+        DBPassword: "{{ migdbpass }}"
+        BaseStack: "{{ base_stack_name }}"

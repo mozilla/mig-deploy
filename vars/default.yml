@@ -1,6 +1,7 @@
 ---
 region: us-west-2
 availability_zone: us-west-2a
+availability_zone2: us-west-2b
 keys: "alm-keys"
 ami_id: ami-2709bd47
 state: present
@@ -13,3 +14,6 @@ base_stack_name: "mig-base-{{ base_stack_id }}"
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
 api_certificate_name: "migapitmp"
+
+rds_stack_id: "1"
+rds_stack_name: "mig-rds-{{ rds_stack_id }}"
