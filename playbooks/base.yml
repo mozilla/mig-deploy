@@ -20,3 +20,4 @@
         InstanceType: "t2.micro"
         KeyName: "{{ keys }}"
         DeployRepo: "{{ deployrepo }}"
+        AvailabilityZone: "{{ availability_zone }}"
