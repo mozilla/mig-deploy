@@ -33,6 +33,7 @@
         },
         "DBPassword": {
             "Description": "DB password",
+            "NoEcho": "true",
             "Type": "String"
         }
     },
