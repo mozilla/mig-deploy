@@ -27,6 +27,10 @@
         "DeployRepo": {
             "Type": "String",
             "Description": "URL for MIG deploy repo"
+        },
+        "RoleStack": {
+            "Type": "String",
+            "Description": "Name of role stack"
         }
     },
     "Resources": {
@@ -164,12 +168,19 @@
                 "RouteTableId": { "Ref": "PrivateRouteTable" }
             }
         },
+        "InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Roles": [ { "Fn::ImportValue": { "Fn::Sub": "${RoleStack}-MIGInstanceRole" }} ]
+            }
+        },
         "BastionInstance": {
             "Type": "AWS::EC2::Instance",
             "DependsOn": "GatewayAssoc",
             "Properties": {
                 "ImageId": { "Ref": "ImageId" },
                 "InstanceType": { "Ref": "InstanceType" },
+                "IamInstanceProfile": { "Ref": "InstanceProfile" },
                 "KeyName": { "Ref": "KeyName" },
                 "SourceDestCheck": "false",
                 "NetworkInterfaces": [{

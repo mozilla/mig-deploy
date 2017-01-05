@@ -20,3 +20,4 @@
         InstanceType: "t2.micro"
         KeyName: "{{ keys }}"
         DeployRepo: "{{ deployrepo }}"
+        RoleStack: "{{ role_stack_name }}"
