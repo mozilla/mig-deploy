@@ -204,8 +204,8 @@
                             [
                                 "#!/bin/sh\n",
                                 "echo gw >> /etc/myrole\n",
-                                "apt-get -y install git ansible golang-go awscli\n",
-                                "export GOPATH=$HOME/go; mkdir $GOPATH\n",
+                                "apt-get update && apt-get -y install git ansible golang-go awscli\n",
+                                "export GOPATH=/root/go; mkdir $GOPATH\n",
                                 "go get -u go.mozilla.org/sops/cmd/sops\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
@@ -216,6 +216,7 @@
                                 "/mig/mig-sec-",
                                 { "Ref": "Environment" },
                                 ".yml vars/sec.yml\n",
+                                "/root/go/bin/sops -d -i vars/sec.yml\n",
                                 "ansible-playbook entry.yml\n"
                             ]
                         ]
