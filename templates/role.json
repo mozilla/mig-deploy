@@ -15,6 +15,10 @@
         "RoleName": {
             "Description": "Name for created MIG instance role",
             "Type": "String"
+        },
+        "SopsS3ARN": {
+            "Description": "S3 ARN for sops data",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -44,6 +48,21 @@
                                 "Resource": "*",
                                 "Action": [
                                     "ec2:DescribeTags"
+                                ]
+                            },
+                            {
+                                "Effect": "Allow",
+                                "Resource": {
+                                    "Fn::Join": [
+                                    "",
+                                    [
+                                        { "Ref": "SopsS3ARN" },
+                                        "/mig/*"
+                                    ]
+                                    ]
+                                },
+                                "Action": [
+                                    "S3:GetObject"
                                 ]
                             }
                         ],

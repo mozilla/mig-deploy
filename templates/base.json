@@ -31,6 +31,10 @@
         "RoleStack": {
             "Type": "String",
             "Description": "Name of role stack"
+        },
+        "SopsS3URL": {
+            "Type": "String",
+            "Description": "S3 URL for sops data"
         }
     },
     "Resources": {
@@ -200,11 +204,19 @@
                             [
                                 "#!/bin/sh\n",
                                 "echo gw >> /etc/myrole\n",
-                                "apt-get -y install git ansible\n",
+                                "apt-get -y install git ansible golang-go awscli\n",
+                                "export GOPATH=$HOME/go; mkdir $GOPATH\n",
+                                "go get -u go.mozilla.org/sops/cmd/sops\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
                                 "\n",
-                                "cd /root/mig-deploy/playbooks && ansible-playbook entry.yml\n"
+                                "cd /root/mig-deploy/playbooks\n",
+                                "aws s3 cp ",
+                                { "Ref": "SopsS3URL" },
+                                "/mig/mig-sec-",
+                                { "Ref": "Environment" },
+                                ".yml vars/sec.yml\n",
+                                "ansible-playbook entry.yml\n"
                             ]
                         ]
                     }

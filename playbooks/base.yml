@@ -21,3 +21,4 @@
         KeyName: "{{ keys }}"
         DeployRepo: "{{ deployrepo }}"
         RoleStack: "{{ role_stack_name }}"
+        SopsS3URL: "{{ sopss3url }}"

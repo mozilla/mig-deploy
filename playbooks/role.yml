@@ -17,3 +17,4 @@
       template_parameters:
         Environment: "{{ env }}"
         RoleName: "{{ migrolename }}"
+        SopsS3ARN: "{{ sopss3arn }}"
