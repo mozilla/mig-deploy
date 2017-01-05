@@ -7,3 +7,4 @@
 
   roles:
     - { role: "gw", when: noderole == "gw" }
+    - { role: "api", when: noderole == "api" }

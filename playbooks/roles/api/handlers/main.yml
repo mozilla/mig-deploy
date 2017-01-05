@@ -1,0 +1,5 @@
+---
+- name: Restart mig-api
+  service:
+    name: mig-api
+    state: restarted

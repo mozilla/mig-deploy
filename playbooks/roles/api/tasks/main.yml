@@ -1,0 +1,49 @@
+---
+- include_vars: default.yml
+- include_vars: cfoutput.yml
+- include_vars: sec.yml
+
+- name: Fetch server package
+  get_url:
+    url: "{{ migserverurl }}"
+    dest: "{{ migserverfetchpath }}"
+    checksum: "sha256:{{ migserversum }}"
+  register: pkgfetch
+
+- name: Install server package
+  apt:
+    deb: "{{ migserverfetchpath }}"
+  when: pkgfetch.changed
+  notify: Restart mig-api
+
+- name: Create MIG group
+  group:
+    name: mig
+
+- name: Create MIG user
+  user:
+    name: mig
+    group: mig
+
+- name: Template API configuration
+  template:
+    src: api.cfg
+    dest: /etc/mig/api.cfg
+    owner: mig
+    group: mig
+    mode: 0640
+  notify: Restart mig-api
+
+- name: Install MIG service
+  copy:
+    src: mig-api.service
+    dest: /etc/systemd/system/mig-api.service
+    mode: 0644
+    owner: root
+  notify: Restart mig-api
+
+- name: Enable mig-api
+  service:
+    name: mig-api
+    enabled: yes
+    state: started

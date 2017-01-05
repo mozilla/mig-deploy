@@ -1,0 +1,13 @@
+[Unit]
+Description=MIG API
+After=network.target
+
+[Service]
+ExecStart=/opt/mig/bin/mig-api
+Restart=always
+RestartSec=60
+StartLimitInterval=0
+User=mig
+
+[Install]
+WantedBy=multi-user.target
