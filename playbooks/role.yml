@@ -16,3 +16,4 @@
     args:
       template_parameters:
         Environment: "{{ env }}"
+        RoleName: "{{ migrolename }}"

@@ -11,12 +11,17 @@
             "Default": "dev",
             "Description": "Environment",
             "Type": "String"
+        },
+        "RoleName": {
+            "Description": "Name for created MIG instance role",
+            "Type": "String"
         }
     },
     "Resources": {
         "MIGInstanceRole": {
             "Type": "AWS::IAM::Role",
             "Properties": {
+                "RoleName": { "Ref": "RoleName" },
                 "AssumeRolePolicyDocument": {
                     "Statement": [ {
                         "Effect": "Allow",
@@ -47,5 +52,12 @@
                 } ]
             }
         }
+    },
+    "Outputs": {
+        "MIGInstanceRole": {
+            "Description": "MIG instance role",
+            "Value": { "Ref": "MIGInstanceRole" },
+            "Export": { "Name": {"Fn::Sub": "${AWS::StackName}-MIGInstanceRole" }}
+        },
     }
 }
