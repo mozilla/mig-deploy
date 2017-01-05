@@ -1,0 +1,18 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+    - "../vars/default.yml"
+
+  tasks:
+  - name: Configure MIG instance roles
+    action: cloudformation
+      stack_name="{{ role_stack_name }}"
+      state="{{ state }}"
+      region="{{ region }}"
+      template="../templates/role.json"
+    args:
+      template_parameters:
+        Environment: "{{ env }}"

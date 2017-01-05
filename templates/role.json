@@ -1,0 +1,51 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "MIG instance roles",
+    "Parameters": {
+        "Environment": {
+            "AllowedValues": [
+                "dev",
+                "stage",
+                "prod"
+            ],
+            "Default": "dev",
+            "Description": "Environment",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "MIGInstanceRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [ {
+                        "Effect": "Allow",
+                        "Action": [
+                            "sts:AssumeRole"
+                        ],
+                        "Principal": {
+                            "Service": [
+                                "ec2.amazonaws.com"
+                            ]
+                        }
+                    } ]
+                },
+                "Policies": [ {
+                    "PolicyDocument": {
+                        "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Effect": "Allow",
+                                "Resource": "*",
+                                "Action": [
+                                    "ec2:DescribeTags"
+                                ]
+                            }
+                        ],
+                    },
+                    "PolicyName": "MIGInstanceRole"
+                } ]
+            }
+        }
+    }
+}
