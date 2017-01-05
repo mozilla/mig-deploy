@@ -5,7 +5,7 @@
 
   vars_files:
     - "../vars/default.yml"
-    - "../vars/sec.yml"
+    - "../vars/sec-{{ env }}.yml"
 
   tasks:
   - name: Configure MIG RDS
