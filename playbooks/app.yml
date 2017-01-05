@@ -20,4 +20,8 @@
         ApiInstanceType: "t2.medium"
         KeyName: "{{ keys }}"
         BaseStack: "{{ base_stack_name }}"
+        RoleStack: "{{ role_stack_name }}"
+        RDSStack: "{{ rds_stack_name }}"
+        DeployRepo: "{{ deployrepo }}"
+        SopsS3URL: "{{ sopss3url }}"
         APICertName: "{{ api_certificate_name }}"
