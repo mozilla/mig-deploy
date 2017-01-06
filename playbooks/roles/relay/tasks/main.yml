@@ -1,0 +1,46 @@
+---
+- name: Install packages
+  package:
+    name: "{{ item }}"
+  with_items:
+    - rabbitmq-server
+
+- name: Base rabbitmq configuration
+  copy:
+   src: rabbitmq.config
+   dest: /etc/rabbitmq/rabbitmq.config
+   mode: 0644
+   owner: rabbitmq
+  notify: Restart rabbitmq
+
+- name: rabbitmq enabled_plugins
+  copy:
+    src: enabled_plugins
+    dest: /etc/rabbitmq/enabled_plugins
+    mode: 0644
+    owner: rabbitmq
+  notify: Restart rabbitmq
+
+- name: Install CA certificate
+  copy:
+    content: "{{ internalca }}"
+    dest: /etc/rabbitmq/ca.crt
+    mode: 0644
+    owner: rabbitmq
+  notify: Restart rabbitmq
+
+- name: Install relay certificate
+  copy:
+    content: "{{ relaycert }}"
+    dest: /etc/rabbitmq/relay.crt
+    mode: 0644
+    owner: rabbitmq
+  notify: Restart rabbitmq
+
+- name: Install relay key
+  copy:
+    content: "{{ relaykey }}"
+    dest: /etc/rabbitmq/relay.key
+    mode: 0644
+    owner: rabbitmq
+  notify: Restart rabbitmq
