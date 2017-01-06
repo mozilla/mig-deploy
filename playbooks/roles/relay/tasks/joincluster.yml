@@ -11,3 +11,6 @@
 
 - name: Start rabbitmq app
   command: rabbitmqctl start_app
+
+- name: Configure queue mirror
+  command: rabbitmqctl -p mig set_policy mig-mirror-all "^(toschedulers|toagents|mig(|event))\." \'{"ha-mode":"all"}\'
