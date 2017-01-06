@@ -69,8 +69,8 @@
 
 - name: Add additional relay users
   command: "rabbitmqctl add_user {{ item.name }} {{ item.password }}"
-  with_items: "{{ relayusers }}
+  with_items: "{{ relayusers }}"
 
 - name: Configure additional relay users
   command: 'rabbitmqctl set_permissions -p mig {{ item.name }} "^mig\.agt\..*$" "^(toschedulers|mig\.agt\..*)$" "^(toagents|mig\.agt\..*)$"'
-  with_items: "{{ relayusers }}
+  with_items: "{{ relayusers }}"
