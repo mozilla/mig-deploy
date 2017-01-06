@@ -217,7 +217,7 @@
                                 { "Ref": "Environment" },
                                 ".yml vars/sec.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook entry.yml\n"
+                                "ansible-playbook -t gw entry.yml\n"
                             ]
                         ]
                     }
