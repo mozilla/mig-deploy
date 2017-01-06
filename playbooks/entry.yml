@@ -8,3 +8,4 @@
   roles:
     - { role: "gw", when: noderole == "gw" }
     - { role: "api", when: noderole == "api" }
+    - { role: "relay", primary: true, when: noderole == "relay1" }
