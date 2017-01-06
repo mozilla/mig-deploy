@@ -93,7 +93,7 @@
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook entry.yml\n"
+                                "ansible-playbook -t api entry.yml\n"
                             ]
                         ]
                     }
@@ -110,11 +110,11 @@
                 "LoadBalancerNames": [ { "Ref": "APIELB" } ],
                 "VPCZoneIdentifier": [
                     { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
-                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet2" }},
+                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet2" }}
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig api", "PropagateAtLaunch": "true" }
-                ],
+                ]
             }
         },
         "APIELB": {
@@ -135,7 +135,7 @@
                 ],
                 "Subnets": [
                     { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PublicSubnet1" }},
-                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PublicSubnet2" }},
+                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PublicSubnet2" }}
                 ],
                 "SecurityGroups": [ { "Ref": "APIELBSecurityGroup" } ],
                 "Listeners": [ {
@@ -154,18 +154,19 @@
                             ]
                         ]
                     }
-                } ],
+                } ]
             }
         },
         "Relay1": {
             "Type": "AWS::EC2::Instance",
+            "DependsOn": "Relay2",
             "Properties": {
                 "ImageId": { "Ref": "ImageId" },
                 "InstanceType": { "Ref": "RelayInstanceType" },
                 "IamInstanceProfile": { "Ref": "InstanceProfile" },
                 "KeyName": { "Ref": "KeyName" },
-                "SecurityGroupIds": [ { "Ref": "RelaySecurityGroup" } ],
-                "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
+                "SecurityGroupIds": [ { "Ref": "Relay1SecurityGroup" } ],
+                "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet2" }},
                 "Tags": [
                     { "Key": "Name", "Value": "mig relay 1" }
                 ],
@@ -188,8 +189,64 @@
                                 "/mig/mig-sec-",
                                 { "Ref": "Environment" },
                                 ".yml vars/sec.yml\n",
+                                "echo '---' > vars/cfoutput.yml\n",
+                                "echo 'secondaryrelay: ",
+                                { "Fn::GetAtt": [ "Relay2", "PrivateDnsName" ] },
+                                "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook entry.yml\n"
+                                "ansible-playbook -t relay1 entry.yml\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "Relay2": {
+            "Type": "AWS::EC2::Instance",
+            "CreationPolicy": {
+                "ResourceSignal": {
+                    "Timeout": "PT15M",
+                    "Count": 1
+                }
+            },
+            "Properties": {
+                "ImageId": { "Ref": "ImageId" },
+                "InstanceType": { "Ref": "RelayInstanceType" },
+                "IamInstanceProfile": { "Ref": "InstanceProfile" },
+                "KeyName": { "Ref": "KeyName" },
+                "SecurityGroupIds": [ { "Ref": "Relay2SecurityGroup" } ],
+                "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
+                "Tags": [
+                    { "Key": "Name", "Value": "mig relay 2" }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/sh\n",
+                                "echo relay2 >> /etc/myrole\n",
+                                "apt-get update && apt-get -y install git ansible golang-go awscli python-pip\n",
+                                "pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
+                                "export GOPATH=/root/go; mkdir $GOPATH\n",
+                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "cd /root && git clone ",
+                                { "Ref": "DeployRepo" },
+                                "\n",
+                                "cd /root/mig-deploy/playbooks\n",
+                                "aws s3 cp ",
+                                { "Ref": "SopsS3URL" },
+                                "/mig/mig-sec-",
+                                { "Ref": "Environment" },
+                                ".yml vars/sec.yml\n",
+                                "echo '---' > vars/cfoutput.yml\n",
+                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "ansible-playbook -t relay2 entry.yml\n",
+                                "cfn-signal -e 0 --stack '",
+                                { "Ref": "AWS::StackName" },
+                                "' --resource 'Relay2' --region '",
+                                { "Ref": "AWS::Region" },
+                                "'\n"
                             ]
                         ]
                     }
@@ -223,7 +280,21 @@
                 ]
             }
         },
-        "RelaySecurityGroup": {
+        "Relay1SecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security group for relay instances",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}},
+                    { "IpProtocol": "tcp", "FromPort": "5671", "ToPort": "5672", "SourceSecurityGroupId": { "Ref": "Relay2SecurityGroup" }},
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig relay security group" }
+                ]
+            }
+        },
+        "Relay2SecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
                 "GroupDescription": "Security group for relay instances",
@@ -234,6 +305,17 @@
                 "Tags": [
                     { "Key": "Name", "Value": "mig relay security group" }
                 ]
+            }
+        },
+        "Relay2RelayIngress": {
+            "Type": "AWS::EC2::SecurityGroupIngress",
+            "DependsOn": "Relay2SecurityGroup",
+            "Properties": {
+                "GroupId": { "Ref": "Relay2SecurityGroup" },
+                "IpProtocol": "tcp",
+                "FromPort": "5671",
+                "ToPort": "5672",
+                "SourceSecurityGroupId": { "Ref": "Relay1SecurityGroup" }
             }
         }
     }
