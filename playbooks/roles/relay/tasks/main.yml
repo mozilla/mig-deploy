@@ -47,3 +47,22 @@
     mode: 0644
     owner: rabbitmq
   notify: Restart rabbitmq
+
+- name: Copy erlang cookie
+  copy:
+    content: "{{ erlangcookie }}"
+    dest: "/var/lib/rabbitmq/.erlang.cookie"
+    owner: rabbitmq
+    mode: 0600
+  notify: Restart rabbitmq
+
+- meta: flush_handlers
+
+- name: Add mig vhost
+  command: rabbitmqctl add_vhost mig
+
+- name: Add scheduler user
+  command: "rabbitmqctl add_user scheduler {{ rabbitmq_pass_scheduler }}"
+
+- name: Configure scheduler user
+  command: rabbiqmectl set_permissions -p mig scheduler "^(toagents|toschedulers|mig\.agt\..*)$" "^(toagents|mig\.agt\.(heartbeats|results))$" "^(toagents|toschedulers|mig\.agt\.(heartbeats|results))$"
