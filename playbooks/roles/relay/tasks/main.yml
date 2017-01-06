@@ -1,6 +1,7 @@
 ---
 - include_vars: default.yml
 - include_vars: sec.yml
+- include_vars: cfoutput.yml
 
 - name: Install packages
   package:

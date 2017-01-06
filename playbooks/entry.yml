@@ -6,6 +6,7 @@
     noderole: "{{ lookup('file', '/etc/myrole') }}"
 
   roles:
-    - { role: "gw", when: noderole == "gw" }
-    - { role: "api", when: noderole == "api" }
-    - { role: "relay", primary: true, when: noderole == "relay1" }
+    - { role: "gw", tags: ["gw"] }
+    - { role: "api", tags: ["api"] }
+    - { role: "relay", primary: true, tags: ["relay1"] }
+    - { role: "relay", primary: false, tags: ["relay2"] }
