@@ -65,4 +65,12 @@
   command: "rabbitmqctl add_user scheduler {{ rabbitmq_pass_scheduler }}"
 
 - name: Configure scheduler user
-  command: rabbiqmectl set_permissions -p mig scheduler "^(toagents|toschedulers|mig\.agt\..*)$" "^(toagents|mig\.agt\.(heartbeats|results))$" "^(toagents|toschedulers|mig\.agt\.(heartbeats|results))$"
+  command: 'rabbitmqctl set_permissions -p mig scheduler "^(toagents|toschedulers|mig\.agt\..*)$" "^(toagents|mig\.agt\.(heartbeats|results))$" "^(toagents|toschedulers|mig\.agt\.(heartbeats|results))$"'
+
+- name: Add additional relay users
+  command: "rabbitmqctl add_user {{ item.name }} {{ item.password }}"
+  with_items: "{{ relayusers }}
+
+- name: Configure additional relay users
+  command: 'rabbitmqctl set_permissions -p mig {{ item.name }} "^mig\.agt\..*$" "^(toschedulers|mig\.agt\..*)$" "^(toagents|mig\.agt\..*)$"'
+  with_items: "{{ relayusers }}
