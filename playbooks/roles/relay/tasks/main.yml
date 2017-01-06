@@ -75,3 +75,6 @@
 - name: Configure additional relay users
   command: 'rabbitmqctl set_permissions -p mig {{ item.name }} "^mig\.agt\..*$" "^(toschedulers|mig\.agt\..*)$" "^(toagents|mig\.agt\..*)$"'
   with_items: "{{ relayusers }}"
+
+- include: joincluster.yml
+  when: primary
