@@ -10,3 +10,4 @@
     - { role: "api", tags: ["api"] }
     - { role: "relay", primary: true, tags: ["relay1"] }
     - { role: "relay", primary: false, tags: ["relay2"] }
+    - { role: "scheduler", tags: ["scheduler"] }

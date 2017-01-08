@@ -157,6 +157,53 @@
                 } ]
             }
         },
+        "Scheduler": {
+            "Type": "AWS::EC2::Instance",
+            "DependsOn": "Relay1",
+            "Properties": {
+                "ImageId": { "Ref": "ImageId" },
+                "InstanceType": { "Ref": "SchedulerInstanceType" },
+                "IamInstanceProfile": { "Ref": "InstanceProfile" },
+                "KeyName": { "Ref": "KeyName" },
+                "SecurityGroupIds": [ { "Ref": "SchedulerSecurityGroup" } ],
+                "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
+                "Tags": [
+                    { "Key": "Name", "Value": "mig scheduler" }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/sh\n",
+                                "echo scheduler >> /etc/myrole\n",
+                                "apt-get update && apt-get -y install git ansible golang-go awscli\n",
+                                "export GOPATH=/root/go; mkdir $GOPATH\n",
+                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "cd /root && git clone ",
+                                { "Ref": "DeployRepo" },
+                                "\n",
+                                "cd /root/mig-deploy/playbooks\n",
+                                "aws s3 cp ",
+                                { "Ref": "SopsS3URL" },
+                                "/mig/mig-sec-",
+                                { "Ref": "Environment" },
+                                ".yml vars/sec.yml\n",
+                                "echo '---' > vars/cfoutput.yml\n",
+                                "echo 'relayhost: ",
+                                { "Fn::GetAtt": [ "RelayELB", "DNSName" ] },
+                                "' >> vars/cfoutput.yml\n",
+                                "echo 'dbhost: ",
+                                { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
+                                "' >> vars/cfoutput.yml\n",
+                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "ansible-playbook -t scheduler entry.yml\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
         "Relay1": {
             "Type": "AWS::EC2::Instance",
             "DependsOn": "Relay2",
@@ -300,6 +347,19 @@
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig api elb security group" }
+                ]
+            }
+        },
+        "SchedulerSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security group for scheduler instance",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}}
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig scheduler security group" }
                 ]
             }
         },

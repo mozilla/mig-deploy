@@ -1,0 +1,73 @@
+---
+- include_vars: default.yml
+- include_vars: cfoutput.yml
+- include_vars: sec.yml
+
+- name: Fetch server package
+  get_url:
+    url: "{{ migserverurl }}"
+    dest: "{{ migserverfetchpath }}"
+    checksum: "sha256:{{ migserversum }}"
+  register: pkgfetch
+
+- name: Install CA certificate
+  copy:
+    content: "{{ internalca }}"
+    dest: "/etc/mig/ca.crt"
+    mode: 0644
+    owner: mig
+  notify: Restart mig-scheduler
+
+- name: Install scheduler certificate
+  copy:
+    content: "{{ schedulercert }}"
+    dest: "/etc/mig/scheduler.crt"
+    mode: 0644
+    owner: mig
+  notify: Restart mig-scheduler
+
+- name: Install scheduler key
+  copy:
+    content: "{{ schedulerkey }}"
+    dest: "/etc/mig/scheduler.key"
+    mode: 0640
+    owner: mig
+  notify: Restart mig-scheduler
+
+- name: Install server package
+  apt:
+    deb: "{{ migserverfetchpath }}"
+  when: pkgfetch.changed
+  notify: Restart mig-api
+
+- name: Create MIG group
+  group:
+    name: mig
+
+- name: Create MIG user
+  user:
+    name: mig
+    group: mig
+
+- name: Template scheduler configuration
+  template:
+    src: scheduler.cfg
+    dest: /etc/mig/scheduler.cfg
+    owner: mig
+    group: mig
+    mode: 0640
+  notify: Restart mig-scheduler
+
+- name: Install MIG service
+  copy:
+    src: mig-scheduler.service
+    dest: /etc/systemd/system/mig-scheduler.service
+    mode: 0644
+    owner: root
+  notify: Restart mig-scheduler
+
+- name: Enable mig-scheduler
+  service:
+    name: mig-scheduler
+    enabled: yes
+    state: started
