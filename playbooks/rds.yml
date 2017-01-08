@@ -8,6 +8,11 @@
     - "../vars/sec-{{ env }}.yml"
 
   tasks:
+  - name: Unset dbname if required
+    set_fact:
+      dbname: ""
+    when: dbsnapshotid != ""
+
   - name: Configure MIG RDS
     action: cloudformation
       stack_name="{{ rds_stack_name }}"
@@ -17,5 +22,7 @@
     args:
       template_parameters:
         Environment: "{{ env }}"
+        DBName: "{{ dbname }}"
         DBPassword: "{{ migdbpass }}"
+        DBSnapshotIdentifier: "{{ dbsnapshotid }}"
         BaseStack: "{{ base_stack_name }}"

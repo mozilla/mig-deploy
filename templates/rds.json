@@ -35,6 +35,16 @@
             "Description": "DB password",
             "NoEcho": "true",
             "Type": "String"
+        },
+        "DBName": {
+            "Description": "Database name",
+            "Default": "mig",
+            "Type": "String"
+        },
+        "DBSnapshotIdentifier": {
+            "Description": "Snapshot id for data migration",
+            "Default": "",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -55,7 +65,8 @@
                 "BackupRetentionPeriod": "30",
                 "DBInstanceClass": { "Ref": "DBInstanceClass" },
                 "DBInstanceIdentifier": { "Fn::Sub": "db-${AWS::StackName}" },
-                "DBName": "mig",
+                "DBSnapshotIdentifier": { "Ref": "DBSnapshotIdentifier" },
+                "DBName": { "Ref": "DBName" },
                 "VPCSecurityGroups": [ { "Ref": "DBSecurityGroup" } ],
                 "Engine": "postgres",
                 "EngineVersion": "9.4.7",
