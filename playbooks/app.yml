@@ -19,6 +19,7 @@
         ImageId: "{{ ami_id }}"
         ApiInstanceType: "t2.medium"
         RelayInstanceType: "t2.medium"
+        SchedulerInstanceType: "t2.medium"
         KeyName: "{{ keys }}"
         BaseStack: "{{ base_stack_name }}"
         RoleStack: "{{ role_stack_name }}"

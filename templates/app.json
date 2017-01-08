@@ -26,6 +26,11 @@
             "Description": "Instance type",
             "Type": "String"
         },
+        "SchedulerInstanceType": {
+            "Default": "t2.micro",
+            "Description": "Instance type",
+            "Type": "String"
+        },
         "KeyName": {
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
