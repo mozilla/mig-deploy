@@ -3,6 +3,15 @@
 - include_vars: cfoutput.yml
 - include_vars: sec.yml
 
+- name: Create MIG group
+  group:
+    name: mig
+
+- name: Create MIG user
+  user:
+    name: mig
+    group: mig
+
 - name: Fetch server package
   get_url:
     url: "{{ migserverurl }}"
@@ -39,15 +48,6 @@
     mode: 0640
     owner: mig
   notify: Restart mig-scheduler
-
-- name: Create MIG group
-  group:
-    name: mig
-
-- name: Create MIG user
-  user:
-    name: mig
-    group: mig
 
 - name: Template scheduler configuration
   template:
