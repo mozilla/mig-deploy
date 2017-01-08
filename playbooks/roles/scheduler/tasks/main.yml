@@ -10,6 +10,12 @@
     checksum: "sha256:{{ migserversum }}"
   register: pkgfetch
 
+- name: Install server package
+  apt:
+    deb: "{{ migserverfetchpath }}"
+  when: pkgfetch.changed
+  notify: Restart mig-scheduler
+
 - name: Install CA certificate
   copy:
     content: "{{ internalca }}"
@@ -33,12 +39,6 @@
     mode: 0640
     owner: mig
   notify: Restart mig-scheduler
-
-- name: Install server package
-  apt:
-    deb: "{{ migserverfetchpath }}"
-  when: pkgfetch.changed
-  notify: Restart mig-api
 
 - name: Create MIG group
   group:
