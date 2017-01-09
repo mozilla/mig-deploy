@@ -196,7 +196,7 @@
                                 ".yml vars/sec.yml\n",
                                 "echo '---' > vars/cfoutput.yml\n",
                                 "echo 'relayhost: ",
-                                { "Fn::GetAtt": [ "RelayELB", "DNSName" ] },
+                                { "Fn::GetAtt": [ "RelayELBInternal", "DNSName" ] },
                                 "' >> vars/cfoutput.yml\n",
                                 "echo 'dbhost: ",
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
@@ -328,6 +328,29 @@
                 ]
             }
         },
+        "RelayELBInternal": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "Tags": [
+                    { "Key": "Name", "Value": "mig relay internal load balancer" }
+                ],
+                "Subnets": [
+                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
+                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet2" }}
+                ],
+                "SecurityGroups": [ { "Ref": "RelayELBInternalSecurityGroup" } ],
+                "Listeners": [ {
+                    "InstancePort": "5672",
+                    "InstanceProtocol": "TCP",
+                    "LoadBalancerPort": "5672",
+                    "Protocol": "TCP",
+                } ],
+                "Instances": [
+                    { "Ref": "Relay1" },
+                    { "Ref": "Relay2" }
+                ]
+            }
+        },
         "APISecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -418,6 +441,19 @@
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig relay elb security group" }
+                ]
+            }
+        },
+        "RelayELBInternalSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Relay ELB internal access",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "5672", "ToPort": "5672", "CidrIp": "10.20.0.0/16" }
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig relay elb internal security group" }
                 ]
             }
         }
