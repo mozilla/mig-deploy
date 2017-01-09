@@ -12,6 +12,14 @@
     name: mig
     group: mig
 
+- name: Create mig cache directory
+  file:
+    path: /var/cache/mig
+    state: directory
+    owner: mig
+    group: mig
+    mode: 0755
+
 - name: Fetch server package
   get_url:
     url: "{{ migserverurl }}"
