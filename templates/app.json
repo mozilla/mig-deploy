@@ -338,6 +338,7 @@
                     { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
                     { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet2" }}
                 ],
+                "Scheme": "internal",
                 "SecurityGroups": [ { "Ref": "RelayELBInternalSecurityGroup" } ],
                 "Listeners": [ {
                     "InstancePort": "5672",
@@ -399,7 +400,8 @@
                 "SecurityGroupIngress": [
                     { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}},
                     { "IpProtocol": "tcp", "FromPort": "0", "ToPort": "65535", "SourceSecurityGroupId": { "Ref": "Relay2SecurityGroup" }},
-                    { "IpProtocol": "tcp", "FromPort": "5671", "ToPort": "5671", "SourceSecurityGroupId": { "Ref": "RelayELBSecurityGroup" }}
+                    { "IpProtocol": "tcp", "FromPort": "5671", "ToPort": "5671", "SourceSecurityGroupId": { "Ref": "RelayELBSecurityGroup" }},
+                    { "IpProtocol": "tcp", "FromPort": "5672", "ToPort": "5672", "SourceSecurityGroupId": { "Ref": "RelayELBInternalSecurityGroup" }}
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig relay security group" }
@@ -413,7 +415,8 @@
                 "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
                 "SecurityGroupIngress": [
                     { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}},
-                    { "IpProtocol": "tcp", "FromPort": "5671", "ToPort": "5671", "SourceSecurityGroupId": { "Ref": "RelayELBSecurityGroup" }}
+                    { "IpProtocol": "tcp", "FromPort": "5671", "ToPort": "5671", "SourceSecurityGroupId": { "Ref": "RelayELBSecurityGroup" }},
+                    { "IpProtocol": "tcp", "FromPort": "5672", "ToPort": "5672", "SourceSecurityGroupId": { "Ref": "RelayELBInternalSecurityGroup" }}
                 ],
                 "Tags": [
                     { "Key": "Name", "Value": "mig relay security group" }
