@@ -46,7 +46,7 @@ rds
 ~~~
 
 Stack creates a Postgres RDS instance which will host the MIG database. When
-new stacks are created to replace an old stack, generally a new ``base``, ``rds``,
+new stacks are created to replace an old stack, generally a new ``rds``,
 and ``app`` stack will be created. We require a new ``rds`` stack as currently
 it is not possible to share the same database instance between multiple running
 instances of the scheduler. This role supports supplying a database snapshot
