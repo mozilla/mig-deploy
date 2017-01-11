@@ -1,0 +1,21 @@
+---
+- name: Ensure sudo group exists
+  group:
+    name: sudo
+
+- name: Create users
+  user:
+    name: "{{ item.name }}"
+    groups: sudo
+    state: present
+  with_items: "{{ users }}"
+
+- name: Configure SSH keys
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.pubkey }}"
+    exclusive: yes
+  with_items: "{{ users }}"
+
+- name: sudo without password for sudo users
+  lineinfile: "dest=/etc/sudoers regexp='^%sudo\\s+' line='%sudo ALL=(ALL:ALL) NOPASSWD: ALL'"

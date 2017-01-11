@@ -134,7 +134,7 @@
                         "PolicyType": "SSLNegotiationPolicyType",
                         "Attributes": [ {
                             "Name": "Reference-Security-Policy",
-                            "Value": "ELBSecurityPolicy-2015-03"
+                            "Value": "ELBSecurityPolicy-2016-08"
                         } ]
                     }
                 ],
@@ -459,6 +459,28 @@
                     { "Key": "Name", "Value": "mig relay elb internal security group" }
                 ]
             }
+        }
+    },
+    "Outputs": {
+        "APIELBDNSName": {
+            "Description": "DNS for API ELB",
+            "Value": { "Fn::GetAtt": [ "APIELB", "DNSName" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-APIELBDNSName" }}
+        },
+        "RelayELBDNSName": {
+            "Description": "DNS for Relay ELB",
+            "Value": { "Fn::GetAtt": [ "RelayELB", "DNSName" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-RelayELBDNSName" }}
+        },
+        "APIELBName": {
+            "Description": "API ELB name",
+            "Value": { "Ref": "APIELB" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-APIELBName" }}
+        },
+        "RelayELBName": {
+            "Description": "Relay ELB name",
+            "Value": { "Ref": "RelayELB" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-RelayELBName" }}
         }
     }
 }
