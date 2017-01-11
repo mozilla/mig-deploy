@@ -471,6 +471,16 @@
             "Description": "DNS for Relay ELB",
             "Value": { "Fn::GetAtt": [ "RelayELB", "DNSName" ] },
             "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-RelayELBDNSName" }}
+        },
+        "APIELBName": {
+            "Description": "API ELB name",
+            "Value": { "Ref": "APIELB" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-APIELBName" }}
+        },
+        "RelayELBName": {
+            "Description": "Relay ELB name",
+            "Value": { "Ref": "RelayELB" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-RelayELBName" }}
         }
     }
 }

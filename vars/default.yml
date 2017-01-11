@@ -23,3 +23,8 @@ dbsnapshotid: ""
 
 role_stack_id: "1"
 role_stack_name: "mig-role-{{ rds_stack_id }}"
+
+# the following are used by promote-app
+domain: mig.allizom.org
+apidnszone: api.mig.allizom.org
+relaydnszone: relay.mig.allizom.org
