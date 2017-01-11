@@ -1,4 +1,7 @@
 ---
+- include_vars: default.yml
+- include_vars: sec.yml
+
 - name: Ensure sudo group exists
   group:
     name: sudo
