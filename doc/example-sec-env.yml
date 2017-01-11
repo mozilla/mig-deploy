@@ -1,3 +1,8 @@
+users:
+  - name: myuser
+    pubkey: ssh-rsa ......
+  - name: myuser2
+    pubkey: ssh-rsa ......
 apidbpassword: APIDBPASSWORD
 schedulerdbpassword: SCHEDULERDBPASSWORD
 internalca: |
