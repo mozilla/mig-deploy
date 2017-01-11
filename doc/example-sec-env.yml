@@ -1,0 +1,19 @@
+apidbpassword: APIDBPASSWORD
+schedulerdbpassword: SCHEDULERDBPASSWORD
+internalca: |
+    KEYPEM
+relaycert: |
+    KEYPEM
+relaykey: |
+    KEYPEM
+erlangcookie: ERLANGCOOKIE
+rabbitmq_pass_scheduler: RABBITMQPASS
+relayusers:
+    - name: agent
+      password: RABBITMQPASS
+    - name: agent2
+      password: RABBITMQPASS
+schedulerkey: |
+    KEYPEM
+schedulercert: |
+    KEYPEM
