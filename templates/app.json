@@ -134,7 +134,7 @@
                         "PolicyType": "SSLNegotiationPolicyType",
                         "Attributes": [ {
                             "Name": "Reference-Security-Policy",
-                            "Value": "ELBSecurityPolicy-2015-03"
+                            "Value": "ELBSecurityPolicy-2016-08"
                         } ]
                     }
                 ],
