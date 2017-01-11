@@ -460,5 +460,17 @@
                 ]
             }
         }
+    },
+    "Outputs": {
+        "APIELBDNSName": {
+            "Description": "DNS for API ELB",
+            "Value": { "Fn::GetAtt": [ "APIELB", "DNSName" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-APIELBDNSName" }}
+        },
+        "RelayELBDNSName": {
+            "Description": "DNS for Relay ELB",
+            "Value": { "Fn::GetAtt": [ "RelayELB", "DNSName" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-RelayELBDNSName" }}
+        }
     }
 }
