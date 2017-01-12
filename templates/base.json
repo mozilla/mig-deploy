@@ -179,6 +179,14 @@
                 "Roles": [ { "Fn::ImportValue": { "Fn::Sub": "${RoleStack}-MIGInstanceRole" }} ]
             }
         },
+        "BastionEIP": {
+            "Type": "AWS::EC2::EIP",
+            "DependsOn": "GatewayAssoc",
+            "Properties": {
+                "InstanceId": { "Ref": "BastionInstance" },
+                "Domain": "vpc"
+            }
+        },
         "BastionInstance": {
             "Type": "AWS::EC2::Instance",
             "DependsOn": "GatewayAssoc",
@@ -275,6 +283,11 @@
             "Description": "Bastion security group ID",
             "Value": { "Ref": "BastionSecurityGroup" },
             "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-BastionSecurityGroupId" }}
+        },
+        "BastionIP": {
+            "Description": "Bastion public IP",
+            "Value": { "Fn::GetAtt": [ "BastionInstance", "PublicIp" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-BastionIP" }}
         }
     }
 }
