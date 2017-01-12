@@ -28,3 +28,4 @@ role_stack_name: "mig-role-{{ rds_stack_id }}"
 domain: mig.allizom.org
 apidnszone: api.mig.allizom.org
 relaydnszone: relay.mig.allizom.org
+admindnszone: admin.mig.allizom.org

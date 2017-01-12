@@ -6,7 +6,15 @@
     - "../vars/default.yml"
 
   tasks:
-    - name: Get CloudFormation facts
+    - name: Get CloudFormation facts for base stack
+      cloudformation_facts:
+        stack_name: "{{ base_stack_name }}"
+        region: "{{ region }}"
+      register: basestack
+
+    - debug: var=basestack
+
+    - name: Get CloudFormation facts for app stack
       cloudformation_facts:
         stack_name: "{{ app_stack_name }}"
         region: "{{ region }}"
@@ -57,5 +65,15 @@
         value: "{{ appstack.ansible_facts.cloudformation[app_stack_name].stack_outputs.RelayELBDNSName }}"
         alias: true
         alias_hosted_zone_id: "{{ relayelb.elbs[0].hosted_zone_id }}"
+        ttl: 300
+        overwrite: true
+
+    - name: Configure admin zone
+      route53:
+        command: "create"
+        zone: "{{ domain }}"
+        record: "{{ admindnszone }}"
+        type: "A"
+        value: "{{ basestack.ansible_facts.cloudformation[base_stack_name].stack_outputs.BastionIP }}"
         ttl: 300
         overwrite: true
