@@ -73,7 +73,9 @@
                 "MasterUsername": { "Ref": "DBUser" },
                 "MasterUserPassword": { "Ref": "DBPassword" },
                 "DBSubnetGroupName": { "Ref": "DBSubnetGroup" },
-                "PubliclyAccessible": "false"
+                "PubliclyAccessible": "false",
+                "StorageType": "gp2",
+                "MultiAZ": true
             }
         },
         "DBSecurityGroup": {
