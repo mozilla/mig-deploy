@@ -3,7 +3,7 @@
   gather_facts: False
 
   vars_files:
-    - "../vars/default.yml"
+    - "../vars/vars-{{ env }}.yml"
 
   tasks:
     - name: Get CloudFormation facts for base stack

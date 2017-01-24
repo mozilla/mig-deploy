@@ -4,7 +4,7 @@
   gather_facts: False
 
   vars_files:
-    - "../vars/default.yml"
+    - "../vars/vars-{{ env }}.yml"
     - "../vars/sec-{{ env }}.yml"
 
   tasks:
