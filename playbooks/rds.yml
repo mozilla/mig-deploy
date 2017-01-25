@@ -26,3 +26,4 @@
         DBPassword: "{{ migdbpass }}"
         DBSnapshotIdentifier: "{{ dbsnapshotid }}"
         BaseStack: "{{ base_stack_name }}"
+        DBAllocatedStorage: "{{ dbstorage }}"

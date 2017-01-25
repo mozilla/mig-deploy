@@ -20,6 +20,7 @@ rds_stack_id: "1"
 rds_stack_name: "mig-rds-{{ rds_stack_id }}"
 dbname: "mig"
 dbsnapshotid: ""
+dbstorage: "8"
 
 role_stack_id: "1"
 role_stack_name: "mig-role-{{ rds_stack_id }}"
