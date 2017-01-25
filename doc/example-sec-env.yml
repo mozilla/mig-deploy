@@ -13,6 +13,7 @@ relaykey: |
     KEYPEM
 erlangcookie: ERLANGCOOKIE
 rabbitmq_pass_scheduler: RABBITMQPASS
+rabbitmq_pass_datadogmonitor: RABBITMQPASS
 relayusers:
     - name: agent
       password: RABBITMQPASS
