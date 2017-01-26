@@ -5,6 +5,9 @@
   vars:
     noderole: "{{ lookup('file', '/etc/myrole') }}"
 
+  vars_files:
+    - "vars/sec.yml"
+
   roles:
     - { role: "users", tags: ["users"] }
     - { role: "gw", tags: ["gw"] }
@@ -12,3 +15,4 @@
     - { role: "relay", primary: true, tags: ["relay1"] }
     - { role: "relay", primary: false, tags: ["relay2"] }
     - { role: "scheduler", tags: ["scheduler"] }
+    - { role: "datadog", tags: ["datadog"], datadog_config: "{{ datadog[noderole].config }}", datadog_checks: "{{ datadog[noderole].checks }}" }
