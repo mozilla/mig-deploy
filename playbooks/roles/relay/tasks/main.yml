@@ -9,6 +9,16 @@
   with_items:
     - rabbitmq-server
 
+- name: Update rabbitmq file limit
+  lineinfile:
+    path: /lib/systemd/system/rabbitmq-server.service
+    regexp: "^LimitNOFILE.*"
+    line: "LimitNOFILE=131072"
+
+- name: Reload systemd
+  shell: systemctl daemon-reload
+  notify: Restart rabbitmq
+
 - name: Base rabbitmq configuration
   copy:
    src: rabbitmq.config
