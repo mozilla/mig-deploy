@@ -9,6 +9,10 @@ migrolename: "MIGInstanceRole"
 sopss3arn: "arn:aws:s3:::infosec-dev-sops"
 sopss3url: "s3://infosec-dev-sops"
 
+api_instance_type: "t2.medium"
+scheduler_instance_type: "t2.medium"
+relay_instance_type: "t2.medium"
+
 base_stack_id: "1"
 base_stack_name: "mig-base-{{ base_stack_id }}"
 

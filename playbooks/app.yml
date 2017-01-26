@@ -17,9 +17,9 @@
       template_parameters:
         Environment: "{{ env }}"
         ImageId: "{{ ami_id }}"
-        ApiInstanceType: "t2.medium"
-        RelayInstanceType: "t2.medium"
-        SchedulerInstanceType: "t2.medium"
+        ApiInstanceType: "{{ api_instance_type }}"
+        RelayInstanceType: "{{ relay_instance_type }}"
+        SchedulerInstanceType: "{{ scheduler_instance_type }}"
         KeyName: "{{ keys }}"
         BaseStack: "{{ base_stack_name }}"
         RoleStack: "{{ role_stack_name }}"

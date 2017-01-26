@@ -9,12 +9,16 @@ migrolename: "MIGInstanceRole"
 sopss3arn: "arn:aws:s3:::infosec-prod-sops"
 sopss3url: "s3://infosec-prod-sops"
 
+api_instance_type: "t2.large"
+scheduler_instance_type: "c3.xlarge"
+relay_instance_type: "c3.xlarge"
+
 base_stack_id: "1"
 base_stack_name: "mig-base-{{ base_stack_id }}"
 
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
-api_certificate_name: "migapitmp"
+api_certificate_name: "mig-api-prod"
 
 rds_stack_id: "1"
 rds_stack_name: "mig-rds-{{ rds_stack_id }}"
