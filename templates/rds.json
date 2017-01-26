@@ -74,7 +74,8 @@
                 "MasterUserPassword": { "Ref": "DBPassword" },
                 "DBSubnetGroupName": { "Ref": "DBSubnetGroup" },
                 "PubliclyAccessible": "false",
-                "StorageType": "gp2",
+                "StorageType": "io1",
+                "Iops": "1000",
                 "MultiAZ": true
             }
         },
