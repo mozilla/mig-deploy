@@ -72,6 +72,9 @@
 - name: Add mig vhost
   command: rabbitmqctl add_vhost mig
 
+- name: Remove guest user
+  command: "rabbitmqctl delete_user guest"
+
 - name: Add scheduler user
   command: "rabbitmqctl add_user scheduler {{ rabbitmq_pass_scheduler }}"
 
@@ -80,6 +83,9 @@
 
 - name: Add rabbitmq datadog user
   command: "rabbitmqctl add_user datadogmonitor {{ rabbitmq_pass_datadogmonitor }}"
+
+- name: Configure rabbitmq datadog user for monitoring
+  command: "rabbitmqctl set_user_tags datadogmonitor monitoring"
 
 - name: Configure rabbitmq datadog user for mig vhost
   command: 'rabbitmqctl set_permissions -p mig datadogmonitor ".*" ".*" ".*"'
