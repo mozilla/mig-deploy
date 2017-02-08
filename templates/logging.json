@@ -26,6 +26,7 @@
             "Type": "AWS::SNS::Topic",
             "Properties": {
                 "DisplayName": "mig-log-sns",
+                "TopicName": "mig-log-sns",
                 "Subscription": [
                     {
                         "Protocol": "sqs",
