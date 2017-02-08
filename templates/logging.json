@@ -44,6 +44,11 @@
                             "Effect": "Allow",
                             "Resource": { "Ref": "SNSTopic" },
                             "Action": [ "SNS:Publish" ]
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Resource": "*",
+                            "Action": [ "SNS:ListTopics" ]
                         }
                     ]
                 },
@@ -68,6 +73,9 @@
                             "Action": [
                                 "SQS:SendMessage"
                             ],
+                            "Principal": {
+                                "AWS": "*"
+                            },
                             "Condition": {
                                 "ArnEquals": {
                                     "aws:SourceArn": { "Ref": "SNSTopic" }
