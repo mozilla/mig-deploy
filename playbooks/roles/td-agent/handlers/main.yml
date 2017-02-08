@@ -1,0 +1,10 @@
+---
+- name: Restart td-agent
+  service:
+    name: td-agent
+    state: restarted
+
+- name: Restart rsyslogd
+  service:
+    name: rsyslogd
+    state: restarted
