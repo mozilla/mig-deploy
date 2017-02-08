@@ -1,0 +1,99 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "MIG SNS and SQS for logging",
+    "Parameters": {
+        "Environment": {
+            "AllowedValues": [
+                "dev",
+                "stage",
+                "prod"
+            ],
+            "Default": "dev",
+            "Description": "Environment",
+            "Type": "String"
+        },
+        "RoleStack": {
+            "Description": "Name of role stack",
+            "Type": "String"
+        },
+        "MozdefSQSUser": {
+            "Description": "IAM user MozDef uses to consume SQS data",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "SNSTopic": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+                "DisplayName": "mig-log-sns",
+                "Subscription": [
+                    {
+                        "Protocol": "sqs",
+                        "Endpoint": { "Fn::GetAtt": [ "SQS", "Arn" ] }
+                    }
+                ]
+            }
+        },
+        "SNSPolicy": {
+            "Type": "AWS::IAM::Policy",
+            "Properties": {
+                "PolicyName": "mig-log-sns-policy",
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Resource": { "Ref": "SNSTopic" },
+                            "Action": [ "SNS:Publish" ]
+                        }
+                    ]
+                },
+                "Roles": [ { "Fn::ImportValue": { "Fn::Sub": "${RoleStack}-MIGInstanceRole" }} ]
+            }
+        },
+        "SQS": {
+            "Type": "AWS::SQS::Queue",
+            "Properties": {
+                "MessageRetentionPeriod": "900",
+                "QueueName": "mig-log-sqs"
+            }
+        },
+        "SQSPolicy": {
+            "Type": "AWS::SQS::QueuePolicy",
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Resource": "*",
+                            "Action": [
+                                "SQS:SendMessage"
+                            ],
+                            "Condition": {
+                                "ArnEquals": {
+                                    "aws:SourceArn": { "Ref": "SNSTopic" }
+                                }
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Resource": "*",
+                            "Action": [ "SQS:*" ],
+                            "Principal": {
+                                "AWS": { "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:iam::",
+                                        { "Ref": "AWS::AccountId" },
+                                        ":user/",
+                                        { "Ref": "MozdefSQSUser" }
+                                    ]
+                                ] }
+                            }
+                        }
+                    ]
+                },
+                "Queues": [ { "Ref": "SQS" } ]
+            }
+        }
+    }
+}
