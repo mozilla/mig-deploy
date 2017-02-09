@@ -47,6 +47,9 @@
             "Type": "String"
         }
     },
+    "Conditions": {
+        "IsProd": { "Fn::Equals": [ { "Ref": "Environment"}, "prod" ] }
+    },
     "Resources": {
         "DBSubnetGroup": {
             "Type": "AWS::RDS::DBSubnetGroup",
@@ -74,8 +77,20 @@
                 "MasterUserPassword": { "Ref": "DBPassword" },
                 "DBSubnetGroupName": { "Ref": "DBSubnetGroup" },
                 "PubliclyAccessible": "false",
-                "StorageType": "io1",
-                "Iops": "1000",
+                "StorageType": {
+                    "Fn::If": [
+                        "IsProd",
+                        "io1",
+                        "gp2"
+                    ]
+                },
+                "Iops": {
+                    "Fn::If": [
+                        "IsProd",
+                        "1000",
+                        { "Ref": "AWS::NoValue" }
+                    ]
+                },
                 "MultiAZ": true
             }
         },
