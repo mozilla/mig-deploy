@@ -37,6 +37,9 @@
             "Description": "S3 URL for sops data"
         }
     },
+    "Conditions": {
+        "IsProd": { "Fn::Equals": [ { "Ref": "Environment"}, "prod" ] }
+    },
     "Resources": {
         "VPC": {
             "Type": "AWS::EC2::VPC",
