@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars_files:
+    - "../vars/vars-{{ env }}.yml"
+
+  tasks:
+  - name: Configure MIG logging
+    action: cloudformation
+      stack_name="{{ logging_stack_name }}"
+      state="{{ state }}"
+      region="{{ region }}"
+      template="../templates/logging.json"
+    args:
+      template_parameters:
+        Environment: "{{ env }}"
+        RoleStack: "{{ role_stack_name }}"
+        MozdefSQSUser: "{{ mozdef_sqs_user }}"

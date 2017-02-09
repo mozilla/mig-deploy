@@ -29,6 +29,10 @@ dbstorage: "8"
 role_stack_id: "1"
 role_stack_name: "mig-role-{{ rds_stack_id }}"
 
+logging_stack_id: "1"
+logging_stack_name: "mig-logging-{{ logging_stack_id }}"
+mozdef_sqs_user: "mozdef"
+
 # the following are used by promote-app
 domain: mig.allizom.org
 apidnszone: api.mig.allizom.org

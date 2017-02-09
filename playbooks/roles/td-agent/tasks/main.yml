@@ -1,0 +1,22 @@
+---
+- name: Install td-agent
+  shell: curl -L https://toolbelt.treasuredata.com/sh/install-ubuntu-xenial-td-agent2.sh | sh
+
+- name: Install fluent-plugin-amazon_sns
+  command: td-agent-gem install fluent-plugin-amazon_sns
+
+- name: Update td-agent configuration
+  copy:
+    src: td-agent.conf
+    dest: /etc/td-agent/td-agent.conf
+    mode: 0644
+    owner: root
+  notify: Restart td-agent
+
+- name: Configure rsyslogd forwarding
+  copy:
+    src: 60-fluentd.conf
+    dest: /etc/rsyslog.d/60-fluentd.conf
+    mode: 0644
+    owner: root
+  notify: Restart rsyslogd

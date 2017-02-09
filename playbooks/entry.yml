@@ -10,6 +10,7 @@
 
   roles:
     - { role: "users", tags: ["users"] }
+    - { role: "td-agent", tags: ["td-agent"] }
     - { role: "gw", tags: ["gw"] }
     - { role: "api", tags: ["api"] }
     - { role: "relay", primary: true, tags: ["relay1"] }
