@@ -101,7 +101,7 @@
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,api,td-agent"
+                                "ansible-playbook -t users,api,td-agent",
                                 { "Fn::If": [
                                     "IsProd",
                                     ",datadog",
@@ -211,7 +211,7 @@
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,scheduler,td-agent"
+                                "ansible-playbook -t users,scheduler,td-agent",
                                 { "Fn::If": [
                                     "IsProd",
                                     ",datadog",
@@ -261,7 +261,7 @@
                                 { "Fn::GetAtt": [ "Relay2", "PrivateDnsName" ] },
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,relay1,td-agent"
+                                "ansible-playbook -t users,relay1,td-agent",
                                 { "Fn::If": [
                                     "IsProd",
                                     ",datadog",
