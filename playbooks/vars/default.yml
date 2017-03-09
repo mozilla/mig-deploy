@@ -1,6 +1,6 @@
 ---
 migpkgrepo: https://s3.amazonaws.com/infosec-mig/public/server
-migserverversion: 20170209-0.1aa8d47.prod
+migserverversion: 20170309-0.da684c5.prod
 migserverurl: "{{ migpkgrepo }}/mig-server_{{ migserverversion }}_amd64.deb"
-migserversum: 06e59440176084031c8a8f964472c0af7ab3a9748331c14d3d9a5cfe0c639902
+migserversum: ca0338fb04cde74d69eb74c609ddabdef44443f61ecaa8289a0ff605e66216a3
 migserverfetchpath: "/root/mig-server_{{ migserverversion }}_amd64.deb"
