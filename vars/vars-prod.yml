@@ -27,7 +27,7 @@ dbsnapshotid: ""
 dbstorage: "125"
 
 role_stack_id: "1"
-role_stack_name: "mig-role-{{ rds_stack_id }}"
+role_stack_name: "mig-role-{{ role_stack_id }}"
 
 logging_stack_id: "1"
 logging_stack_name: "mig-logging-{{ logging_stack_id }}"
