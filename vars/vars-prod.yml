@@ -34,7 +34,7 @@ logging_stack_name: "mig-logging-{{ logging_stack_id }}"
 mozdef_sqs_user: "mozdef"
 
 # the following are used by promote-app
-domain: mig.allizom.org
-apidnszone: api.mig.allizom.org
-relaydnszone: relay.mig.allizom.org
-admindnszone: admin.mig.allizom.org
+domain: mig.mozilla.org
+apidnszone: api.mig.mozilla.org
+relaydnszone: publicrelay.mig.mozilla.org
+admindnszone: admin.mig.mozilla.org
