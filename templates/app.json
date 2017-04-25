@@ -349,6 +349,9 @@
                     "LoadBalancerPort": "443",
                     "Protocol": "TCP",
                 } ],
+                "ConnectionSettings": {
+                    "IdleTimeout": "600"
+                },
                 "Instances": [
                     { "Ref": "Relay1" },
                     { "Ref": "Relay2" }
@@ -373,6 +376,9 @@
                     "LoadBalancerPort": "5672",
                     "Protocol": "TCP",
                 } ],
+                "ConnectionSettings": {
+                    "IdleTimeout": "600"
+                },
                 "Instances": [
                     { "Ref": "Relay1" },
                     { "Ref": "Relay2" }
