@@ -19,6 +19,7 @@ base_stack_name: "mig-base-{{ base_stack_id }}"
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
 api_certificate_name: "mig-api-prod"
+selfservice_certificate_name: "TOBEADDED"
 
 rds_stack_id: "1"
 rds_stack_name: "mig-rds-{{ rds_stack_id }}"
@@ -38,3 +39,4 @@ domain: mig.mozilla.org
 apidnszone: api.mig.mozilla.org
 relaydnszone: publicrelay.mig.mozilla.org
 admindnszone: admin.mig.mozilla.org
+selfservicednszone: selfservice.mig.mozilla.org

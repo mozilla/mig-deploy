@@ -44,6 +44,17 @@
     - name: Verify relay ELB health
       assert: { that: "relayelb.elbs[0].instances_inservice_percent == 100.0" }
 
+    - name: Get Self Service ELB facts
+      ec2_elb_facts:
+        names: "{{ appstack.ansible_facts.cloudformation[app_stack_name].stack_outputs.SelfServiceELBName }}"
+        region: "{{ region }}"
+      register: selfserviceelb
+
+    - debug: var=selfserviceelb
+
+    - name: Verify selfservice ELB health
+      assert: { that: "selfserviceelb.elbs[0].instances_inservice_percent == 100.0" }
+
     - name: Configure API zone
       route53:
         command: "create"
@@ -53,6 +64,18 @@
         value: "{{ appstack.ansible_facts.cloudformation[app_stack_name].stack_outputs.APIELBDNSName }}"
         alias: true
         alias_hosted_zone_id: "{{ apielb.elbs[0].hosted_zone_id }}"
+        ttl: 300
+        overwrite: true
+
+    - name: Configure self service zone
+      route53:
+        command: "create"
+        zone: "{{ domain }}"
+        record: "{{ selfservicednszone }}"
+        type: "A"
+        value: "{{ appstack.ansible_facts.cloudformation[app_stack_name].stack_outputs.SelfServiceELBDNSName }}"
+        alias: true
+        alias_hosted_zone_id: "{{ selfserviceelb.elbs[0].hosted_zone_id }}"
         ttl: 300
         overwrite: true
 

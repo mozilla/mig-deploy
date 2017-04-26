@@ -19,6 +19,7 @@ base_stack_name: "mig-base-{{ base_stack_id }}"
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
 api_certificate_name: "mig-api-dev"
+selfservice_certificate_name: "28f9da5e-709a-4a87-a761-e445da5e79d4"
 
 rds_stack_id: "1"
 rds_stack_name: "mig-rds-{{ rds_stack_id }}"
@@ -38,3 +39,4 @@ domain: mig.allizom.org
 apidnszone: api.mig.allizom.org
 relaydnszone: relay.mig.allizom.org
 admindnszone: admin.mig.allizom.org
+selfservicednszone: selfservice.mig.allizom.org

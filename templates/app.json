@@ -31,6 +31,11 @@
             "Description": "Instance type",
             "Type": "String"
         },
+        "SelfServiceInstanceType": {
+            "Default": "t2.micro",
+            "Description": "Instance type",
+            "Type": "String"
+        },
         "KeyName": {
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
@@ -50,6 +55,10 @@
             "Type": "String",
             "Description": "Name of certificate to use for API"
         },
+        "SelfServiceCertName": {
+            "Type": "String",
+            "Description": "Name of certificate to use for self service"
+        },
         "DeployRepo": {
             "Type": "String",
             "Description": "URL for MIG deploy repo"
@@ -57,6 +66,10 @@
         "SopsS3URL": {
             "Type": "String",
             "Description": "S3 URL for sops data"
+        },
+        "APIDNSName": {
+            "Type": "String",
+            "Description": "MIG API DNS hostname"
         }
     },
     "Conditions": {
@@ -210,6 +223,91 @@
                         ]
                     }
                 }
+            }
+        },
+        "SelfService": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "ImageId": { "Ref": "ImageId" },
+                "InstanceType": { "Ref": "SelfServiceInstanceType" },
+                "IamInstanceProfile": { "Ref": "InstanceProfile" },
+                "KeyName": { "Ref": "KeyName" },
+                "SecurityGroupIds": [ { "Ref": "SelfServiceSecurityGroup" } ],
+                "SubnetId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PrivateSubnet1" }},
+                "Tags": [
+                    { "Key": "Name", "Value": "mig self service" }
+                ],
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "",
+                            [
+                                "#!/bin/sh\n",
+                                "echo selfservice >> /etc/myrole\n",
+                                "apt-get update && apt-get -y install git ansible golang-go awscli\n",
+                                "export GOPATH=/root/go; mkdir $GOPATH\n",
+                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "cd /root && git clone ",
+                                { "Ref": "DeployRepo" },
+                                "\n",
+                                "cd /root/mig-deploy/playbooks\n",
+                                "aws s3 cp ",
+                                { "Ref": "SopsS3URL" },
+                                "/mig/mig-sec-",
+                                { "Ref": "Environment" },
+                                ".yml vars/sec.yml\n",
+                                "echo '---' > vars/cfoutput.yml\n",
+                                "echo 'apidnszone: ",
+                                { "Ref": "APIDNSName" },
+                                "' >> vars/cfoutput.yml\n",
+                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "ansible-playbook -t users,selfservice,td-agent entry.yml\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "SelfServiceELB": {
+            "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties": {
+                "Tags": [
+                    { "Key": "Name", "Value": "mig self service load balancer" }
+                ],
+                "Policies": [
+                    {
+                        "PolicyName": "SelfServiceELBSecurityPolicy",
+                        "PolicyType": "SSLNegotiationPolicyType",
+                        "Attributes": [ {
+                            "Name": "Reference-Security-Policy",
+                            "Value": "ELBSecurityPolicy-2016-08"
+                        } ]
+                    }
+                ],
+                "Subnets": [
+                    { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-PublicSubnet1" }}
+                ],
+                "SecurityGroups": [ { "Ref": "SelfServiceELBSecurityGroup" } ],
+                "Instances": [ { "Ref": "SelfService" } ],
+                "Listeners": [ {
+                    "InstancePort": "80",
+                    "InstanceProtocol": "HTTP",
+                    "LoadBalancerPort": "443",
+                    "Protocol": "HTTPS",
+                    "PolicyNames": [ "SelfServiceELBSecurityPolicy" ],
+                    "SSLCertificateId": {
+                        "Fn::Join": [ "",
+                            [
+                                "arn:aws:acm:",
+                                { "Ref": "AWS::Region" },
+                                ":",
+                                { "Ref": "AWS::AccountId" },
+                                ":certificate/",
+                                { "Ref": "SelfServiceCertName" }
+                            ]
+                        ]
+                    }
+                } ]
             }
         },
         "Relay1": {
@@ -401,6 +499,32 @@
                 ]
             }
         },
+        "SelfServiceSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Security group for self service instance",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "22", "ToPort": "22", "SourceSecurityGroupId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-BastionSecurityGroupId" }}}
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig self service security group" }
+                ]
+            }
+        },
+        "SelfServiceELBSecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "SelfService ELB access",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${BaseStack}-VPCId" }},
+                "SecurityGroupIngress": [
+                    { "IpProtocol": "tcp", "FromPort": "443", "ToPort": "443", "CidrIp": "0.0.0.0/0" }
+                ],
+                "Tags": [
+                    { "Key": "Name", "Value": "mig self service elb security group" }
+                ]
+            }
+        },
         "Relay1SecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -476,6 +600,11 @@
             "Value": { "Fn::GetAtt": [ "APIELB", "DNSName" ] },
             "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-APIELBDNSName" }}
         },
+        "SelfServiceELBDNSName": {
+            "Description": "DNS for SelfService ELB",
+            "Value": { "Fn::GetAtt": [ "SelfServiceELB", "DNSName" ] },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-SelfServiceELBDNSName" }}
+        },
         "RelayELBDNSName": {
             "Description": "DNS for Relay ELB",
             "Value": { "Fn::GetAtt": [ "RelayELB", "DNSName" ] },
@@ -485,6 +614,11 @@
             "Description": "API ELB name",
             "Value": { "Ref": "APIELB" },
             "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-APIELBName" }}
+        },
+        "SelfServiceELBName": {
+            "Description": "SelfService ELB name",
+            "Value": { "Ref": "SelfServiceELB" },
+            "Export": { "Name": { "Fn::Sub": "${AWS::StackName}-SelfServiceELBName" }}
         },
         "RelayELBName": {
             "Description": "Relay ELB name",
