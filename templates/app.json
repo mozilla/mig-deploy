@@ -101,13 +101,7 @@
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,api,td-agent",
-                                { "Fn::If": [
-                                    "IsProd",
-                                    ",datadog",
-                                    ""
-                                ] },
-                                " entry.yml\n"
+                                "ansible-playbook -t users,api,td-agent entry.yml\n"
                             ]
                         ]
                     }
@@ -211,13 +205,7 @@
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,scheduler,td-agent",
-                                { "Fn::If": [
-                                    "IsProd",
-                                    ",datadog",
-                                    ""
-                                ] },
-                                " entry.yml\n"
+                                "ansible-playbook -t users,scheduler,td-agent entry.yml\n"
                             ]
                         ]
                     }
@@ -261,13 +249,7 @@
                                 { "Fn::GetAtt": [ "Relay2", "PrivateDnsName" ] },
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,relay1,td-agent",
-                                { "Fn::If": [
-                                    "IsProd",
-                                    ",datadog",
-                                    ""
-                                ] },
-                                " entry.yml\n"
+                                "ansible-playbook -t users,relay1,td-agent entry.yml\n"
                             ]
                         ]
                     }
@@ -314,13 +296,7 @@
                                 ".yml vars/sec.yml\n",
                                 "echo '---' > vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
-                                "ansible-playbook -t users,relay2,td-agent",
-                                { "Fn::If": [
-                                    "IsProd",
-                                    ",datadog",
-                                    ""
-                                ] },
-                                " entry.yml\n",
+                                "ansible-playbook -t users,relay2,td-agent entry.yml\n",
                                 "cfn-signal -e 0 --stack '",
                                 { "Ref": "AWS::StackName" },
                                 "' --resource 'Relay2' --region '",

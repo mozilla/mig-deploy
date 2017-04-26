@@ -16,4 +16,3 @@
     - { role: "relay", primary: false, tags: ["relay2"] }
     - { role: "scheduler", tags: ["scheduler"] }
     - { role: "td-agent", tags: ["td-agent"] }
-    - { role: "datadog", tags: ["datadog"], datadog_config: "{{ datadog[noderole].config }}", datadog_checks: "{{ datadog[noderole].checks }}" }
