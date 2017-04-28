@@ -1,0 +1,5 @@
+---
+openrestysrc: "https://openresty.org/download/openresty-1.11.2.3.tar.gz"
+openrestysrc_sha: "7a0a8570fd3eb193913eb2287f7c926b47e363f376e80c7aa332c35d0fccde69"
+openidcsrc: "https://raw.githubusercontent.com/mozilla-iam/lua-resty-openidc/master/lib/resty/openidc.lua"
+openidcsrc_sha: "28370cfa69b4b32ab121912c8aa54741e2ce2abae03481678eeddabfa334681f"

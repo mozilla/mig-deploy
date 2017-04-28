@@ -15,4 +15,5 @@
     - { role: "relay", primary: true, tags: ["relay1"] }
     - { role: "relay", primary: false, tags: ["relay2"] }
     - { role: "scheduler", tags: ["scheduler"] }
+    - { role: "selfservice", tags: ["selfservice"] }
     - { role: "td-agent", tags: ["td-agent"] }

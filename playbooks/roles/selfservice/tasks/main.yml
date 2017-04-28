@@ -1,0 +1,98 @@
+---
+- include_vars: default.yml
+- include_vars: cfoutput.yml
+- include_vars: sec.yml
+
+- name: Install packages
+  package:
+    name: "{{ item }}"
+  with_items:
+    - libreadline-dev
+    - libncurses5-dev
+    - libpcre3-dev
+    - libssl-dev
+    - perl
+    - make
+    - build-essential
+    - curl
+    - luarocks
+
+- name: Get openresty src
+  get_url:
+    url: "{{ openrestysrc }}"
+    dest: "/root/openresty.tar.gz"
+    checksum: "sha256:{{ openrestysrc_sha }}"
+  register: openrestynewsrc
+
+- name: Install openresty
+  shell: >
+    mkdir openresty && tar -C openresty --strip-components=1 -zxf openresty.tar.gz &&
+    (cd openresty && ./configure && make && make install)
+  args:
+    chdir: /root
+  when: openrestynewsrc.changed
+  notify: Restart nginx
+
+- name: Install initial version of lua-resty-openidc
+  command: luarocks install lua-resty-openidc
+  args:
+    creates: /usr/local/lib/luarocks/rocks/lua-resty-openidc
+
+- name: Create openresty log directory
+  file:
+    path: /var/log/openresty
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Update nginx configuration
+  template:
+    src: nginx.conf
+    dest: /usr/local/openresty/nginx/conf/nginx.conf
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart nginx
+
+- name: Install nginx service
+  copy:
+    src: nginx.service
+    dest: /etc/systemd/system/nginx.service
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart nginx
+
+- name: Install OIDC layer
+  copy:
+    src: openidc_layer.lua
+    dest: /usr/local/openresty/nginx/conf/openidc_layer.lua
+    mode: 0644
+    owner: root
+    group: root
+  notify: Restart nginx
+
+- name: Create resty lua site directory
+  file:
+    path: /usr/local/openresty/site/lualib/resty
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Fetch openidc lua
+  get_url:
+    url: "{{ openidcsrc }}"
+    dest: /usr/local/openresty/site/lualib/resty/openidc.lua
+    checksum: "sha256:{{ openidcsrc_sha }}"
+  notify: Restart nginx
+  
+- name: Install auth0 configuration
+  template:
+    src: config.lua
+    dest: /usr/local/openresty/nginx/conf/config.lua
+    mode: 0600
+    owner: www-data
+    group: www-data
+  notify: Restart nginx

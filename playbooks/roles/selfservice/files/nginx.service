@@ -1,0 +1,17 @@
+[Unit]
+Description=nginx
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx.pid
+ExecStart=/usr/local/openresty/nginx/sbin/nginx
+ExecPreStart=/usr/local/openresty/nginx/sbin/nginx -t
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s QUIT $MAINPID
+Restart=always
+RestartSec=60
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
