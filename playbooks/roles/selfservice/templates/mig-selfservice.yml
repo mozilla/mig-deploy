@@ -1,4 +1,4 @@
-apiurl: {{ apidnszone }}
+apiurl: https://{{ apidnszone }}/api/v1/
 apikey: {{ ssapikey }}
 skipverifycert: {{ ssskipverifycert }}
 expectenv: tags#>>'{operator}'='it-ws'

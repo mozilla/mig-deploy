@@ -1,0 +1,14 @@
+[Unit]
+Description=MIG self service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/sbin/mig-selfservice -c /etc/mig-selfservice.yml
+WorkingDirectory=/usr/local/mig-selfservice
+Restart=always
+RestartSec=60
+StartLimitInterval=0
+User=mig
+
+[Install]
+WantedBy=multi-user.target

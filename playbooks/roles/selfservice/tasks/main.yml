@@ -109,3 +109,40 @@
     mode: 0600
     owner: mig
   notify: Restart mig-selfservice
+
+- name: Install mig-selfservice
+  command: "go get -u {{ migselfservice }}"
+  args:
+    creates: /root/go/bin/mig-selfservice
+  environment:
+    GOPATH: /root/go
+
+- name: Copy mig-selfservice
+  command: cp /root/go/bin/mig-selfservice /usr/local/sbin/mig-selfservice
+  args:
+    creates: /usr/local/sbin/mig-selfservice
+
+- name: Create working directory
+  file:
+    path: /usr/local/mig-selfservice
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Copy static content
+  shell: rm -rf /usr/local/mig-selfservice/static && cp -R /root/go/src/github.com/mozilla/mig-selfservice/static /usr/local/mig-selfservice
+
+- name: Install MIG service
+  copy:
+    src: mig-selfservice.service
+    dest: /etc/systemd/system/mig-selfservice.service
+    mode: 0644
+    owner: root
+  notify: Restart mig-selfservice
+
+- name: Enable mig-selfservice
+  service:
+    name: mig-selfservice
+    enabled: yes
+    state: started
