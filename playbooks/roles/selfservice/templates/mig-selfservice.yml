@@ -1,6 +1,6 @@
 apiurl: {{ apidnszone }}
 apikey: {{ ssapikey }}
-skipverifycert: {{ ssverifycert }}
+skipverifycert: {{ ssskipverifycert }}
 expectenv: tags#>>'{operator}'='it-ws'
 downloadwin: {{ ssdownloadwin }}
 downloadlinuxrpm: {{ ssdownloadlinuxrpm }}
