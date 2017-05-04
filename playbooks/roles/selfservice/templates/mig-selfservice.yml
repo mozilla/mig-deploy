@@ -1,0 +1,8 @@
+apiurl: {{ apidnszone }}
+apikey: {{ ssapikey }}
+skipverifycert: {{ ssverifycert }}
+expectenv: tags#>>'{operator}'='it-ws'
+downloadwin: {{ ssdownloadwin }}
+downloadlinuxrpm: {{ ssdownloadlinuxrpm }}
+downloadlinuxdeb: {{ ssdownloadlinuxdeb }}
+downloadosx: {{ ssdownloadosx }}

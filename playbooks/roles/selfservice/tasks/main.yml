@@ -96,3 +96,16 @@
     owner: www-data
     group: www-data
   notify: Restart nginx
+
+- name: Create mig user
+  user:
+    name: mig
+    shell: /bin/bash
+
+- name: Install mig-selfservice configuration
+  template:
+    src: mig-selfservice.yml
+    dest: /etc/mig-selfservice.yml
+    mode: 0600
+    owner: mig
+  notify: Restart mig-selfservice

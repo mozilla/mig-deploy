@@ -3,3 +3,8 @@
   service:
     name: nginx
     state: restarted
+
+- name: Restart mig-selfservice
+  service:
+    name: mig-selfservice
+    state: restarted
