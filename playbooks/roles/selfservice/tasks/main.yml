@@ -85,7 +85,6 @@
   get_url:
     url: "{{ openidcsrc }}"
     dest: /usr/local/openresty/site/lualib/resty/openidc.lua
-    checksum: "sha256:{{ openidcsrc_sha }}"
   notify: Restart nginx
   
 - name: Install auth0 configuration
