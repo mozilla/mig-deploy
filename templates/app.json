@@ -70,6 +70,10 @@
         "APIDNSName": {
             "Type": "String",
             "Description": "MIG API DNS hostname"
+        },
+        "SelfServiceDNSName": {
+            "Type": "String",
+            "Description": "MIG self service DNS hostname"
         }
     },
     "Conditions": {
@@ -259,6 +263,9 @@
                                 "echo '---' > vars/cfoutput.yml\n",
                                 "echo 'apidnszone: ",
                                 { "Ref": "APIDNSName" },
+                                "' >> vars/cfoutput.yml\n",
+                                "echo 'selfservicednszone: ",
+                                { "Ref": "SelfServiceDNSName" },
                                 "' >> vars/cfoutput.yml\n",
                                 "/root/go/bin/sops -d -i vars/sec.yml\n",
                                 "ansible-playbook -t users,selfservice,td-agent entry.yml\n"

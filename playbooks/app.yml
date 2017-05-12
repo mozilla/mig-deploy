@@ -29,3 +29,4 @@
         APICertName: "{{ api_certificate_name }}"
         SelfServiceCertName: "{{ selfservice_certificate_name }}"
         APIDNSName: "{{ apidnszone }}"
+        SelfServiceDNSName: "{{ selfservicednszone }}"
