@@ -7,10 +7,8 @@ environment into AWS.
 A few CloudFormation templates exist which depend on each other, so the
 order of playbook execution is important.
 
-See variables in `vars/default.yml`_ for variables that can be changed to
+See variables in ``vars/vars-<env>.yml`` for variables that can be changed to
 modify playbook execution.
-
-.. _vars/default.yml: vars/default.yml
 
 Playbooks
 ---------
@@ -37,6 +35,12 @@ to decrypt data using the KMS ARN used for sops encryption in the account, as
 sops will make use of the instance role to decrypt the file stored in S3 to configure
 the instance.
 
+logging
+~~~~~~~
+
+Stack creates SNS and SQS resources which instances deployed using the other roles
+will log to using td-agent.
+
 base
 ~~~~
 
@@ -59,3 +63,83 @@ app
 
 Stack deploys the MIG application, including the API, scheduler, and relays.
 
+First deployment
+----------------
+
+The playbooks are organized to deploy either a development environment, or a
+production environment. This section will use deployment of production as an
+example.
+
+Edit environment specific configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Edit `<vars/vars-prod.yml>`_, change it as needed. These variables are passed as
+parameters to the various CloudFormation templates, and control playbook execution.
+
+`<vars/sec-prod.yml>_` is an ``ansibile-vault`` protected file that only contains
+the initial RDS administrator password, and is used for first deployment when
+creating the database.
+
+Create sops secrets and upload to s3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An example sops secrets yml file is included at `<doc/example-sec-env.yml>`_. This
+should be edited, encrypted using the relevant KMS key, and uploaded to S3 in the
+bucket location indicated in the environment specific configuration.
+
+Create initial stacks
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code::
+
+        ansible-playbook playbooks/role.yml --extra-vars env=prod
+        ansible-playbook playbooks/logging.yml --extra-vars env=prod
+        ansible-playbook playbooks/base.yml --extra-vars env=prod
+        ansible-playbook playbooks/rds.yml --extra-vars env=prod
+
+Initialize MIG database
+~~~~~~~~~~~~~~~~~~~~~~~
+
+From the created bastion host instance, access the RDS instance using ``psql`` and
+initialize the MIG database from the database schema.
+
+Deploy and promote application
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code::
+
+        ansible-playbook playbooks/app.yml --extra-vars env=prod
+        ansible-playbook playbooks/promote-app.yml --extra-vars env=prod
+
+Updating
+--------
+
+To update, the rds and app stacks are replaced.
+
+Snapshot RDS instance
+~~~~~~~~~~~~~~~~~~~~~
+
+Create a snapshot of the MIG RDS instance.
+
+Create new RDS stack using snapshot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Note the stack ID should be incremented.
+
+.. code::
+
+        ansible-playbook playbooks/rds.yml --extra-vars 'env=prod dbsnapshotid=mysnapshot rds_stack_id=2'
+
+After this step, you can log into the bastion host and make any required schema changes
+to the new RDS instance, and perform any required maintenance before the database is made
+live.
+
+Deploy new app stack and promote
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code::
+
+        ansible-playbook playbooks/app.yml --extra-vars 'env=prod rds_stack_id=2 app_stack_id=2'
+        ansible-playbook playbooks/promote-app.yml --extra-vars 'env=prod rds_stack_id=2 app_stack_id=2'
+
+At this point the old app and rds stacks can be removed.
