@@ -1,5 +1,5 @@
 ---
-ssdownloadwin: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader-amd64-20170419.msi
-ssdownloadlinuxrpm: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader-20170403_0.dbb2e7a.prod-1.x86_64.rpm
-ssdownloadlinuxdeb: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader_20170403-0.dbb2e7a.prod_amd64.deb
-ssdownloadosx: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader-20170403-0.dbb2e7a.prod-darwin-amd64.pkg
+ssdownloadwin: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader-amd64-20170517.msi
+ssdownloadlinuxrpm: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader-20170517_0.8fcb6d7.prod-1.x86_64.rpm
+ssdownloadlinuxdeb: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader_20170517-0.8fcb6d7.prod_amd64.deb
+ssdownloadosx: https://s3.amazonaws.com/infosec-mig/public/it-ws/mig-loader-20170517-0.8fcb6d7.prod-darwin-amd64.pkg
