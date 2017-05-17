@@ -76,7 +76,7 @@ Edit environment specific configuration
 Edit `<vars/vars-prod.yml>`_, change it as needed. These variables are passed as
 parameters to the various CloudFormation templates, and control playbook execution.
 
-`<vars/sec-prod.yml>_` is an ``ansibile-vault`` protected file that only contains
+`<vars/sec-prod.yml>_` is an ``ansible-vault`` protected file that only contains
 the initial RDS administrator password, and is used for first deployment when
 creating the database.
 
