@@ -1,24 +1,50 @@
+# Users which will be added to any instances created
 users:
   - name: myuser
     pubkey: ssh-rsa ......
   - name: myuser2
     pubkey: ssh-rsa ......
+# DB password for mig API
 apidbpassword: APIDBPASSWORD
+# DB password for mig scheduler
 schedulerdbpassword: SCHEDULERDBPASSWORD
+# CA used for relay certificate
 internalca: |
     KEYPEM
+# RabbitMQ relay certificate
 relaycert: |
     KEYPEM
+# RabbitMQ relay key
 relaykey: |
     KEYPEM
+# Client ID for auth0 authentication, used by self service portal
+a0clientid: AUTH0CLIENTID
+# Secret for auth0 authentication, used by self service portal
+a0clientsec: AUTH0CLIENTSECRET
+# API key self service portal uses to authenticate with MIG API
+ssapikey: SELFSERVICEAPIKEY
+# If true, verify API certificate from self service portal
+ssskipverifycert: true
+# OpenIDC session secret
+sessionsecret: OPENIDCSESSIONSECRET
+# erlang cookie used for communication between members of
+# the RabbitMQ cluster
 erlangcookie: ERLANGCOOKIE
+# The password the scheduler will use to connect to RabbitMQ
 rabbitmq_pass_scheduler: RABBITMQPASS
+# Any relay users; these are users that will be added to
+# RabbitMQ and will be the users agents connect to the relay
+# as
 relayusers:
     - name: agent
       password: RABBITMQPASS
     - name: agent2
       password: RABBITMQPASS
+# Key associated with scheduler certificate
 schedulerkey: |
     KEYPEM
+# Client certificate the scheduler will use when connecting to
+# the RabbitMQ relay which requires a client certificate, should
+# be signed by internalca
 schedulercert: |
     KEYPEM
