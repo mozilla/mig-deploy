@@ -19,7 +19,7 @@ base_stack_name: "mig-base-{{ base_stack_id }}"
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
 api_certificate_name: "mig-api-prod"
-selfservice_certificate_name: "TOBEADDED"
+selfservice_certificate_name: "fdd6ba2b-4c7b-46f4-9514-5578c02b4ec8"
 
 rds_stack_id: "1"
 rds_stack_name: "mig-rds-{{ rds_stack_id }}"
