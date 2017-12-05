@@ -51,11 +51,15 @@ build_headers(session.data.id_token, "ID_TOKEN_")
 build_headers(session.data.user, "USER_PROFILE_")
 
 -- Flat groups, useful for some RP's that won't read JSON
-for k,v in pairs(session.data.id_token.groups) do
-  if grps == nil then
-    grps = string.gsub(cjson.encode(v), '"', '')
-  else
-    grps = string.gsub(grps.."|"..cjson.encode(v), '"', '')
-  end
+local grps = ""
+local usergrp = ""
+if session.data.user.groups then
+    usergrp = session.data.user.groups
+else
+    usergrp = session.data.user['https://sso.mozilla.com/claim/groups']
+end
+
+for k,v in pairs(usergrp) do
+  grps = grps and grps.."|"..v or v
 end
 ngx.req.set_header("X-Forwarded-Groups", grps)
