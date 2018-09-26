@@ -1,7 +1,7 @@
 ---
 region: us-west-2
-keys: "alm-keys"
-ami_id: ami-2709bd47
+keys: "infosec-us-west-2-keys"
+ami_id: ami-0455347fc7dd91c5b
 state: present
 env: dev
 deployrepo: "https://github.com/mozilla/mig-deploy.git"
@@ -19,7 +19,7 @@ base_stack_name: "mig-base-{{ base_stack_id }}"
 app_stack_id: "1"
 app_stack_name: "mig-app-{{ app_stack_id }}"
 api_certificate_name: "mig-api-dev"
-selfservice_certificate_name: "28f9da5e-709a-4a87-a761-e445da5e79d4"
+selfservice_certificate_name: "50e26c1c-83c9-4589-b9b2-93e34dd07b9c"
 
 rds_stack_id: "1"
 rds_stack_name: "mig-rds-{{ rds_stack_id }}"
