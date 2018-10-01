@@ -103,7 +103,8 @@
                                 "echo api >> /etc/myrole\n",
                                 "apt-get update && apt-get -y install git ansible golang-go awscli\n",
                                 "export GOPATH=/root/go; mkdir $GOPATH\n",
-                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "wget https://github.com/mozilla/sops/releases/download/3.1.0/sops_3.1.0_amd64.deb\n",
+                                "dpkg -i sops_3.1.0_amd64.deb\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
                                 "\n",
@@ -117,7 +118,7 @@
                                 "echo 'dbhost: ",
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
-                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "sops -d -i vars/sec.yml\n",
                                 "ansible-playbook -t users,api,td-agent entry.yml\n"
                             ]
                         ]
@@ -204,7 +205,8 @@
                                 "echo scheduler >> /etc/myrole\n",
                                 "apt-get update && apt-get -y install git ansible golang-go awscli\n",
                                 "export GOPATH=/root/go; mkdir $GOPATH\n",
-                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "wget https://github.com/mozilla/sops/releases/download/3.1.0/sops_3.1.0_amd64.deb\n",
+                                "dpkg -i sops_3.1.0_amd64.deb\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
                                 "\n",
@@ -221,7 +223,7 @@
                                 "echo 'dbhost: ",
                                 { "Fn::ImportValue": { "Fn::Sub": "${RDSStack}-DBInstanceAddress" }},
                                 "' >> vars/cfoutput.yml\n",
-                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "sops -d -i vars/sec.yml\n",
                                 "ansible-playbook -t users,scheduler,td-agent entry.yml\n"
                             ]
                         ]
@@ -250,7 +252,8 @@
                                 "echo selfservice >> /etc/myrole\n",
                                 "apt-get update && apt-get -y install git ansible golang-go awscli\n",
                                 "export GOPATH=/root/go; mkdir $GOPATH\n",
-                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "wget https://github.com/mozilla/sops/releases/download/3.1.0/sops_3.1.0_amd64.deb\n",
+                                "dpkg -i sops_3.1.0_amd64.deb\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
                                 "\n",
@@ -267,7 +270,7 @@
                                 "echo 'selfservicednszone: ",
                                 { "Ref": "SelfServiceDNSName" },
                                 "' >> vars/cfoutput.yml\n",
-                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "sops -d -i vars/sec.yml\n",
                                 "ansible-playbook -t users,selfservice,td-agent entry.yml\n"
                             ]
                         ]
@@ -339,7 +342,8 @@
                                 "echo relay1 >> /etc/myrole\n",
                                 "apt-get update && apt-get -y install git ansible golang-go awscli\n",
                                 "export GOPATH=/root/go; mkdir $GOPATH\n",
-                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "wget https://github.com/mozilla/sops/releases/download/3.1.0/sops_3.1.0_amd64.deb\n",
+                                "dpkg -i sops_3.1.0_amd64.deb\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
                                 "\n",
@@ -353,7 +357,7 @@
                                 "echo 'secondaryrelay: ",
                                 { "Fn::GetAtt": [ "Relay2", "PrivateDnsName" ] },
                                 "' >> vars/cfoutput.yml\n",
-                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "sops -d -i vars/sec.yml\n",
                                 "ansible-playbook -t users,relay1,td-agent entry.yml\n"
                             ]
                         ]
@@ -389,7 +393,8 @@
                                 "apt-get update && apt-get -y install git ansible golang-go awscli python-pip\n",
                                 "pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz\n",
                                 "export GOPATH=/root/go; mkdir $GOPATH\n",
-                                "go get -u go.mozilla.org/sops/cmd/sops\n",
+                                "wget https://github.com/mozilla/sops/releases/download/3.1.0/sops_3.1.0_amd64.deb\n",
+                                "dpkg -i sops_3.1.0_amd64.deb\n",
                                 "cd /root && git clone ",
                                 { "Ref": "DeployRepo" },
                                 "\n",
@@ -400,7 +405,7 @@
                                 { "Ref": "Environment" },
                                 ".yml vars/sec.yml\n",
                                 "echo '---' > vars/cfoutput.yml\n",
-                                "/root/go/bin/sops -d -i vars/sec.yml\n",
+                                "sops -d -i vars/sec.yml\n",
                                 "ansible-playbook -t users,relay2,td-agent entry.yml\n",
                                 "cfn-signal -e 0 --stack '",
                                 { "Ref": "AWS::StackName" },
