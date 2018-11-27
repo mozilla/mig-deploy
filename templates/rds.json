@@ -72,7 +72,7 @@
                 "DBName": { "Ref": "DBName" },
                 "VPCSecurityGroups": [ { "Ref": "DBSecurityGroup" } ],
                 "Engine": "postgres",
-                "EngineVersion": "9.4.7",
+                "EngineVersion": "9.4.15",
                 "MasterUsername": { "Ref": "DBUser" },
                 "MasterUserPassword": { "Ref": "DBPassword" },
                 "DBSubnetGroupName": { "Ref": "DBSubnetGroup" },
