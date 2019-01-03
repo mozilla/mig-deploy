@@ -30,8 +30,8 @@
 
     - debug: var=apielb
 
-    - name: Verify API ELB health
-      assert: { that: "apielb.elbs[0].instances_inservice_percent == 100.0" }
+    #- name: Verify API ELB health
+    #  assert: { that: "apielb.elbs[0].instances_inservice_percent == 100.0" }
 
     - name: Get Relay ELB facts
       ec2_elb_facts:
@@ -41,8 +41,8 @@
 
     - debug: var=relayelb
 
-    - name: Verify relay ELB health
-      assert: { that: "relayelb.elbs[0].instances_inservice_percent == 100.0" }
+    #- name: Verify relay ELB health
+    #  assert: { that: "relayelb.elbs[0].instances_inservice_percent == 100.0" }
 
     - name: Get Self Service ELB facts
       ec2_elb_facts:
@@ -52,8 +52,8 @@
 
     - debug: var=selfserviceelb
 
-    - name: Verify selfservice ELB health
-      assert: { that: "selfserviceelb.elbs[0].instances_inservice_percent == 100.0" }
+    #- name: Verify selfservice ELB health
+    #  assert: { that: "selfserviceelb.elbs[0].instances_inservice_percent == 100.0" }
 
     - name: Configure API zone
       route53:
