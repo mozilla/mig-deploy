@@ -143,3 +143,11 @@ Deploy new app stack and promote
         ansible-playbook playbooks/promote-app.yml --extra-vars 'env=prod rds_stack_id=2 app_stack_id=2'
 
 At this point the old app and rds stacks can be removed.
+
+Update API and Scheduler configurations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Once the new RDS and EC2 instances are created, the MIG API and Scheduler will need to have
+their configurations updated to point to the new RDS instance.  Get the instance ID from the
+AWS console under the RDS service and then edit `/etc/mig/api.cfg` and `/etc/mig/scheduler.cfg`
+respectively.
