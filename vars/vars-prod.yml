@@ -1,7 +1,7 @@
 ---
 region: us-west-2
-keys: "alm-keys"
-ami_id: ami-2709bd47
+keys: "infosec-us-west-2-keys"
+ami_id: ami-0455347fc7dd91c5b
 state: present
 env: prod
 deployrepo: "https://github.com/mozilla/mig-deploy.git"
