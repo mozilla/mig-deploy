@@ -1,3 +1,11 @@
+# Deprecation Notice
+
+Mozilla is no longer maintaining the Mozilla InvestiGator (MIG) project.
+
+Mozilla is also no longer making use of this code internally.
+
+You are welcome to use this software as-is with no warranty.
+
 # mig-deploy
 
 Ansible playbooks and associated CloudFormation templates to deploy a MIG
